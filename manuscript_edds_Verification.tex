@@ -1,0 +1,221 @@
+% !TEX encoding = UTF-8 Unicode
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+%%  This file is asmejour-template.tex, a template to format papers in the style of ASME journal papers. 
+%%
+%%  This file is version 1.18 dated 2022/01/10
+%%
+%%  Author: John H. Lienhard V
+%%          Department of Mechanical Engineering
+%%          Massachusetts Institute of Technology
+%%          Cambridge, MA 02139-4307 USA
+%%
+%%  Class options include:
+%%
+%%          * Option to color the vertical bar in the title block [barcolor = colorname] 
+%%          *    where colorname is any name def'd by xcolor package; omit barcolor option to get black
+%%
+%%          * Option to omit the list of figures and list of tables at the end [nolists]
+%%
+%%          * Math options from M. Sharpe's newtxmath package: upright integrals [upint];
+%%          *    [varvw] for a v and w that are better distinguished from Greek nu; [subscriptcorrection]
+%%			*	 to fine-tune the placement of math subscripts; and also additional options such as
+%%          *    [smallerops, varg, slantedGreek, frenchmath, varbb, cmbraces]. Version 1.6 or higher
+%%          *    is recommended.
+%%
+%%          * Option to include line numbers [lineno]. The lineno package does not number tables, 
+%%          *    footnotes, captions, etc. You must run *twice* for proper placement of the numbers. 
+%%          *    This option will disable balancing of the column heights on final page.
+%%
+%%			* Option to balance column heights on final page [balance]. This option sometimes
+%%			*    misbehaves, so use it with an awareness that it can create unexpected problems.
+%%			*	 This option is not compatible with line numbering.
+%%
+%%          * Options for copyright notices:
+%%			* 	 Omit the ASME copyright from the footer [nocopyright]
+%%			*	 Copyright footnote if all authors are government employees  [govt]
+%%			*	 Copyright footnote if some authors are government employees [govtsome]
+%%			*	 Copyright footnote for government contractors [contractor]
+%%
+%%          * Option to omit all ASME text fields from the footer [nofoot].
+%%
+%%			* Options for PDF/A compliance. [pdf-a] will produce PDF/A-3u compliance with sRGB OutputIntent.
+%%			*	 [pdfapart= 1 or 2 or 3] and [pdfaconformance= b or u] can enable levels 1b, 2b, 2u, and 3b.
+%%			*
+%%			*    The most recent versions of LaTeX (2021 and later) are moving toward integrated support for pdf-a, 
+%%			*    through \DeclareDocumentMetadata{..}. The asmeconf class supports these new features, which can 
+%%			*	 replace the aforementioned class options. (An up-to-date LaTeX installation is required.)
+%%
+%%          * Many options for calligraphic, script, and fraktur fonts from the mathalfa package; the
+%%          *    example value used is: mathalfa=cal=euler (use Euler font for \mathcal)
+%%          *    some other options for cal are: dutchcal, zapfc, cm (default), boondox,...
+%%          *    frak (fraktur), bb (blackboard bold), scr (script) may also be controlled.
+%%
+%%          * An option to use newtxtext's superiors font for footnotes [nodefaultsups] and an option
+%%          *    for slightly larger small capitals [largesc]
+%%
+%%          * Options for typewriter font 
+%%          *    [hyphenate] allow hyphenation (normally suppressed because for typewriter font is often used for code)
+%%			*	 [var0] replace default slashed zero by unslashed zero
+%%			*	 [mono] force interword separation to monospacing
+%%
+%%          * Options for the babel package to support passages in other languages (such as a translated 
+%%          *    abstract in an appendix), e.g. [french].  The main language will default to English 
+%%          *    unless a different main language is selected, e.g. [main=spanish]. See Appendix C for details.
+%%
+%%  For details of the newtx and mathalfa packages, refer to their documentation (available at CTAN: http://ctan.org).
+%%
+%%  The use of commands defined or modified by the asmejour class is illustrated below. In particular, some care
+%%  is needed when using complicated math and macros in section headings, to avoid problems with pdf bookmarks, 
+%%  as facilitated by the optional argument of \section (also illustrated below).
+%%
+ %=========================================================
+%% 
+%% LICENSE: 
+%%
+%% Copyright (c) 2022 John H. Lienhard
+%%
+%% Offered under the MIT license: https://ctan.org/license/mit 
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Class options are described above.
+\documentclass[10pt,subscriptcorrection,upint,varvw,barcolor=Goldenrod3,mathalfa=cal=euler,balance,hyphenate,french,pdf-a, nolists,nofoot]  %% To omit final list of figures and tables, use the class option [nolists]
+{asmejour} %
+\usepackage{float,newtxtext,newtxmath}
+\usepackage{caption}
+\usepackage[switch]{lineno}
+
+
+\captionsetup[figure]{font=scriptsize}
+
+%%%%  pdf metadata  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\hypersetup{%
+	pdfauthor={Paulina Rodriguez}, 
+	pdftitle={EDDS Verification Manuscript},                  	% <=== 
+	pdfkeywords={EDDS, medical device, verification, computational model, code verification, solution verification},
+	pdfsubject = {This study is assessing the verification studies of the EDDS medical device computational model study},
+}
+
+%%%%  Journal name and optional copyright year %%%%%%%%%%%%%%
+
+%% Omit "Journal of". If Journal Name is quite long, use \\ to insert a line break
+%% Add this once we decide on the journal
+%% \JourName{Heat Transfer} %<=== change to the name of your journal
+
+%% The default copyright year is the current year
+%% \PaperYear{2022} sets 2022; and \PaperYear{} omits the year entirely.
+                   
+%%%%  end of preamble  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\modulolinenumbers[2]
+\linenumbers
+% Change to your author name[s] and addresses, in the desired order of authors.
+% First name, middle initial, last name
+% Use title case (upper and lower case letters)
+% Note usage below for corresponding author.
+
+\SetAuthorBlock{Paulina Rodriguez}{Department of Mechanical and Aerospace Engineering,\\
+   The George Washington University} %\\
+   %Street address,\\
+   %City, State, Country \\
+   %email: xxx@yyy.zzz} 
+\SetAuthorBlock{Lorena Barba}{Department of Mechanical and Aerospace Engineering,\\
+   The George Washington University,}
+\SetAuthorBlock{Brian Carnes}{Sandia National Laboratories}
+\SetAuthorBlock{Matthew Myers}{Puente Translational Sciences}
+
+% To label one or more corresponding authors put "Name\CorrespondingAuthor". No space after "Name".
+% An optional argument can be added if email is not in address block as
+%      "Name\CorrespondingAuthor{write@to.me}"
+% Can also include multiple emails and use the command more than once for multiple corresponding authors,
+%      "Name\CorrespondingAuthor{write@to.him, write@to.her}"
+
+%\SetAuthorBlock{John H.\ Lienhard V\CorrespondingAuthor}{%
+%Fellow ASME\\
+%Rohsenow Kendall Heat Transfer Laboratory, \\
+%Department of Mechanical Engineering,\\
+%Massachusetts Institute of Technology, \\
+%Cambridge, MA 02139 USA \\
+%email: lienhard@mit.edu
+%}
+
+%%% Change to your paper title. Can insert line breaks if you wish (otherwise breaks are selected automatically).
+\title{Verification of a Conjugate Heat Transfer Model in OpenFOAM for a Simplified Medical Device Geometry}
+
+
+%%% Change these to your keywords.  Keywords are automatically printed at the end of the abstract.
+%%% This command must come BEFORE the end of the abstract.
+%%% If you don't want keywords, omit the \keyword{..} command.
+% \keywords{Verification, Code Verification, Solution Verification, Conjugate Heat Transfer, OpenFOAM, Computational Modeling, Medical Device, V\&V 40, Model Credibility, }
+\keywords{verification and validation, solution verification, conjugate heat transfer, computational fluid dynamics, medical device modeling, model credibility, reproducibility, discretization error, OpenFOAM, V\&V 40}
+
+% Abstract
+\begin{abstract}
+    \input{sections/abstract}
+\end{abstract} 
+
+% \date{Version \versionno, \today}%% You can modify this information as desired. 
+							%% Putting \date{} will suppress any date.  
+							%% If this command is omitted, date defaults to \today
+							%% This command must come somewhere before \maketitle
+
+\maketitle %% This command creates the author/title/abstract block. Essential!
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%  End of fields to be completed. Now write! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% % Main sections
+\section{Introduction}
+\input{sections/introduction}
+
+\section{Methods}
+\input{sections/methods}
+
+\section{Results}
+\input{sections/results}
+
+\section{Discussion}
+\input{sections/discussion}
+
+\section{Conclusion}
+\input{sections/conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgment} %% ASME requests this exact spelling, singular.
+\input{sections/acknowledgements}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Funding Data}
+\input{sections/funding}
+
+%%%%%%%%%  NOMENCLATURE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \section{Nomenclature}
+%% \input{sections/nomenclature}
+
+%%%%%%%%%%%%%  BIBLIOGRAPHY  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\nocite{*} %% <=== delete this line - unless you wish to typeset the entire contents of your .bib file.
+
+\bibliographystyle{asmejour}   %% .bst file that follows ASME journal format. Do not change.
+
+\bibliography{references} %% <=== change this to name of your bib file
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%  APPENDICES  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Note that appendices will be "numbered" A, B, C, ... etc. Use \section, not \section*
+%% Subsections need not be numbered, use \subsection*
+%% The equation counter is reset for each appendix
+%% Figures will be numbered consecutively
+
+% \appendix   %%% starting appendices
+% \input{appendix/appendix_credibility_plan}
+
+%% To omit final list of figures and tables, use the class option [nolists]
+\end{document}
+ 
