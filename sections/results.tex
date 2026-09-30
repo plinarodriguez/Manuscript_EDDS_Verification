@@ -5,26 +5,26 @@ This section presents the results of the verification studies used to assess the
 Code verification is performed to assess the correctness of the numerical implementation through comparison with analytical solutions. Three problems are considered to independently verify the fluid and thermal components of the \texttt{chtMultiRegionFoam} solver: Hagen--Poiseuille flow for laminar momentum transport, steady-state radial conduction with internal heat generation \cite{hagenPoisueille, chtMultiRegion}, and transient thermal diffusion using a separation-of-variables Bessel-function solution. The transient diffusion configuration additionally verifies the transient thermal coupling behavior at the fluid-solid interface by ensuring that the imposed solid temperature response is accurately transferred into the fluid region. Although the full conjugate heat transfer solver is used, the configurations are constructed to isolate fluid flow and heat conduction, respectively. This approach enables rigorous verification of each governing equation prior to evaluating the fully coupled system under solution verification.
 
 \subsubsection{Hydrodynamic (Fluid Only) Model}
-To verify the momentum transport implementation, a steady-state laminar pipe flow simulation was compared against the analytical Hagen-Poiseuille solution. Spatial convergence was assessed using three progressively refined meshes with representative cell sizes of 0.43~mm, 0.22~mm, and 0.11~mm, while maintaining identical geometry and boundary conditions. Axial velocity was evaluated at a cross-sectional plane located beyond the hydrodynamic entry length to ensure fully developed flow. The numerical velocity field was compared pointwise with the analytical solution (Eq.~\ref{eq:poiseuille}).
-Figure~\ref{fig:scatterVelocity} shows that the numerical solution progressively aligns with the analytical parabolic profile as mesh resolution improves. The coarse mesh overpredicts velocity near the centerline due to insufficient spatial resolution, while refinement at the finest mesh achieves the best agreement.
+To verify the momentum transport implementation, a steady-state laminar pipe flow simulation was compared against the analytical Hagen-Poiseuille solution. Spatial convergence was assessed using four progressively refined meshes with representative cell sizes of 0.43~mm, 0.22~mm, 0.11~mm, and 0.088~mm while maintaining identical geometry and boundary conditions. Axial velocity was evaluated at a cross-sectional plane located beyond the hydrodynamic entry length to ensure fully developed flow. The numerical velocity field was compared pointwise with the analytical solution (Eq.~\ref{eq:poiseuille}).
+Figure~\ref{fig:scatterVelocity} shows that the numerical solution progressively aligns with the analytical parabolic profile as mesh resolution improves for three resolutions: coarse (0.43~mm), medium (0.22~mm), and fine (0.11~mm). The coarse mesh overpredicts velocity near the centerline due to insufficient spatial resolution, while refinement at the finest mesh achieves the best agreement.
 
 \begin{figure}[htbp!]
   \centering
   \begin{subfigure}[b]{0.5\textwidth}
     \includegraphics[width=\textwidth]{figures/code_verification/poiseuille/U_scatter_radial_z5mm_M0.png}
-    \caption{Coarse mesh.}
+    \caption{Coarse Mesh}
     \label{fig:sub1}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.5\textwidth}
     \includegraphics[width=\textwidth]{figures/code_verification/poiseuille/U_scatter_radial_z5mm_M1.png}
-    \caption{Medium mesh.}
+    \caption{Medium Mesh}
     \label{fig:sub2}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.5\textwidth}
     \includegraphics[width=\textwidth]{figures/code_verification/poiseuille/U_scatter_radial_z5mm_M2.png}
-    \caption{Fine mesh.}
+    \caption{Fine Mesh}
     \label{fig:sub3}
   \end{subfigure}
   \caption{Simulated hydrodynamic model axial velocity by radial position at $QoI_{\text{hydro}}$, overlaid with the analytical Hagen-Poiseuille solution (black points).}
@@ -140,7 +140,7 @@ To evaluate the coupled effects of spatial and temporal discretization, a co-ref
 
 \subsubsection{Solver Tolerance Study}
 This study is conducted for the transient simplified EDDS configuration, where iterative solver convergence can influence the time-dependent thermal response.
-To assess the impact of linear solver convergence criteria on the predicted thermal response, a solver tolerance study was conducted using mesh M3 and time step T3. Six convergence tolerances ranging from $10^{-3}$ to $10^{-8}$ were evaluated. The coarsest tolerance ($10^{-3}$) underpredicts the temperature response throughout the simulation. As the tolerance is tightened, the solutions converge toward a consistent response. The results for $10^{-7}$ and $10^{-8}$ are visually indistinguishable, indicating that solver-induced numerical error is negligible at these tolerances. Relative error was computed using the most stringent tolerance ($10^{-8}$) as the reference solution. The error decreases from $\mathcal{O}(10^{-1})$ at $10^{-3}$ to $\mathcal{O}(10^{-4})$ at $10^{-8}$. A tolerance of $10^{-6}$ yields a relative error below $0.0125\%$, indicating sufficient solver accuracy for this problem.
+To assess the impact of linear solver convergence criteria on the predicted thermal response, a solver tolerance study was conducted using mesh M3 and time step 0.005~s. Six convergence tolerances ranging from $10^{-3}$ to $10^{-8}$ were evaluated. The coarsest tolerance ($10^{-3}$) underpredicts the temperature response throughout the simulation. As the tolerance is tightened, the solutions converge toward a consistent response. The results for $10^{-7}$ and $10^{-8}$ are visually indistinguishable, indicating that solver-induced numerical error is negligible at these tolerances. Relative error was computed using the most stringent tolerance ($10^{-8}$) as the reference solution. The error decreases from $\mathcal{O}(10^{-1})$ at $10^{-3}$ to $0$ at $10^{-8}$. A tolerance of $10^{-6}$ yields a relative error below $0.0125\%$, indicating sufficient solver accuracy for this problem.
 
 \subsubsection{Decoupled Resolution Analysis} 
 To assess the impact of independently refining spatial and temporal discretization, mesh-only and timestep-only studies were performed and compared against the co-refinement results. Figure~\ref{fig:decoupledConvergence} shows that while error decreases with refinement in both cases, the observed convergence rates ($p \approx 1.06$) are significantly lower than the expected second-order behavior. This indicates that unresolved discretization error from the fixed parameter (time or space) influences the solution.
@@ -190,7 +190,7 @@ The interface energy imbalance, normalized by the applied heat source, remained 
 \subsection{Computational Cost}
 Computational cost was evaluated for the transient simplified EDDS configuration to assess the trade-off between numerical accuracy and resource requirements. Figure~\ref{fig:compCost} summarizes the cost across mesh and timestep combinations. The simulations for each of these combinations were conducted on an Intel Xeon Broadwell (BDW) E5-2695v4 at 2.1 GHz with 18 core CPU workstations. 
 
-For the intermediate resolution case (M3 with $\Delta t = 0.0025$ s), the relative error is approximately $0.1\%$ with a computational cost of 24 minutes. Refinement to M4 with $\Delta t = 0.002$ s reduces the error to $0.055\%$, but increases computational cost to 47 minutes, corresponding to a 96\% increase in cost for a 50\% reduction in error. 
+For the intermediate resolution case (M3 with $\Delta t = 0.0025$ s), the relative error is approximately $0.1\%$ with a computational cost of 24 minutes. Refinement to M4 with $\Delta t = 0.002$ s reduces the error to $0.055\%$, but increases computational cost to 47 minutes, corresponding to a 96\% increase in cost for a 45\% reduction in error. 
 
 \begin{figure}[htbp!]
     \centering
