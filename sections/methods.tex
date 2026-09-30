@@ -37,7 +37,7 @@ All verification studies introduce controlled variations in geometry, temporal r
   Thermal Diffusion & Code
  &Transient&medium pipe&11.25& 45& 0& 56.25& 45\\
   Coupled Pipe& Solution
- &Transient&long pipe&45& 45& 0& 90& 45\\
+ &Steady &long pipe&45& 45& 0& 90& 45\\
   Simplified EDDS& Solution &Transient&short pipe&2.021& 7.2& 42.509& 51.73& 7.2\\ \bottomrule\end{tabular}
   
     \label{tab:geometry_qty}
@@ -47,7 +47,7 @@ To achieve this, the pipe length is selected to exceed both the hydrodynamic and
 
 \begin{equation}
 \small
-L_{\text{hydro}} = 0.05\,Re\,D \approx 36~\text{mm}, \quad
+L_{\text{hydro}} = 0.05\,Re\,D \approx 35~\text{mm}, \quad
 L_{\text{therm}} = 0.05\,Re\,Pr\,D \approx 25~\text{mm}
 \end{equation}
 
@@ -57,7 +57,7 @@ In contrast, the solution verification cases are designed to more closely repres
 
 \subsection{Governing Equations \& Numerical Approach}
 
-Simulations were performed using the open-source finite-volume solver OpenFOAM. Conjugate heat transfer between the solid casing and fluid domain is modeled using the \texttt{chtMultiRegionFoam} solver, which solves the incompressible Navier-Stokes equations in the fluid region and transient heat conduction in both fluid and solid domains without phase change. Conjugate coupling is enforced at the fluid-solid interface through continuity of temperature and heat flux. All equations are discretized using the finite-volume method on unstructured hexahedral meshes.
+Simulations were performed using the open-source finite-volume solver OpenFOAM. Conjugate heat transfer between the solid casing and fluid domain is modeled using the \texttt{chtMultiRegionFoam} solver, which solves the compressible Navier-Stokes equations in the fluid region and transient heat conduction in both fluid and solid domains without phase change. Conjugate coupling is enforced at the fluid-solid interface through continuity of temperature and heat flux. All equations are discretized using the finite-volume method on unstructured hexahedral meshes.
 
 \subsubsection*{Fluid Region}
 
@@ -100,7 +100,7 @@ Thermophysical properties used for air (fluid) and nickel (solid casing) are sum
 Density & \( \rho \) [kg/m\textsuperscript{3}] & 1.204 & 8908 \\
 Specific Heat & \( c_p \) [J/(kg·K)] & 1007 & 444 \\
 Thermal conductivity & \( \kappa \) [W/(m·K)] & 0.027 & 90.9 \\
-Viscosity & \( \mu \) [Pa·s] & \( 1.48 \times 10^{-5} \) & — \\
+Viscosity & \( \mu \) [Pa·s] & \( 1.8 \times 10^{-5} \) & — \\
 \bottomrule
 \end{tabular}
 \end{table}
