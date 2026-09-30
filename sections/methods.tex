@@ -23,34 +23,120 @@ The pipe has an internal diameter of 4.54~mm and is surrounded by a casing with 
 
 All verification studies introduce controlled variations in geometry, temporal regime, and quantities of interest, as summarized in Table~\ref{tab:geometry_qty}. For code verification, the configuration is intentionally simplified to isolate numerical behavior and enable comparison with analytical solutions. A sufficiently long pipe is employed to ensure fully developed hydrodynamic and thermal conditions, thereby minimizing inlet and outlet effects. 
 
+% \begin{table*}[htbp]
+%     \centering
+%       \caption{Geometry quantities, in mm, for the code and solution verification studies. The pipe diameter is 4.54 mm and the case thickness is 0.75 mm.}
+%     \begin{tabular}{llll|ccccc}\toprule
+%               Model& Verification Study
+%  &Regime&Geometry&pipe inlet&pipe case&pipe outlet& pipe &  case \\\midrule
+%               Hydrodynamic& Code
+%  &Steady&long pipe&45&45&0&90& 
+%      45\\
+%   Radial Conduction & Code
+%  &Steady&medium pipe&11.25& 45& 0& 56.25& 45\\
+%   Thermal Diffusion & Code
+%  &Transient&medium pipe&11.25& 45& 0& 56.25& 45\\
+%   Coupled Pipe& Solution
+%  &Steady &long pipe&45& 45& 0& 90& 45\\
+%   Simplified EDDS& Solution &Transient&short pipe&2.021& 7.2& 42.509& 51.73& 7.2\\ \bottomrule\end{tabular}
+  
+%     \label{tab:geometry_qty}
+% \end{table*}
+
 \begin{table*}[htbp]
     \centering
-      \caption{Geometry quantities, in mm, for the code and solution verification studies. The pipe diameter is 4.54 mm and the case thickness is 0.75 mm.}
-    \begin{tabular}{llll|ccccc}\toprule
-              Model& Verification Study
- &Regime&Geometry&pipe inlet&pipe case&pipe outlet& pipe &  case \\\midrule
-              Hydrodynamic& Code
- &Steady&long pipe&45&45&0&90& 
-     45\\
-  Radial Conduction & Code
- &Steady&medium pipe&11.25& 45& 0& 56.25& 45\\
-  Thermal Diffusion & Code
- &Transient&medium pipe&11.25& 45& 0& 56.25& 45\\
-  Coupled Pipe& Solution
- &Steady &long pipe&45& 45& 0& 90& 45\\
-  Simplified EDDS& Solution &Transient&short pipe&2.021& 7.2& 42.509& 51.73& 7.2\\ \bottomrule\end{tabular}
-  
+    \caption{Geometric quantities for the code and solution verification studies. All dimensions are reported in mm. The pipe diameter is 4.54 mm, and the case thickness is 0.75 mm. \(L_{\mathrm{in}}\), \(L_{\mathrm{case}}\), and \(L_{\mathrm{out}}\) denote the pipe inlet, pipe case, and pipe outlet lengths, respectively, and \(L\) denotes the total pipe length.}
+    \begin{tabular}{p{2.4cm}p{1.25cm}p{1.2cm}p{1.5cm}p{3.5cm}p{3.6cm}}
+        \toprule
+        Study & Verification & Regime & Geometry & Physical configuration & QoI \\
+        \midrule        
+        Hydrodynamic
+        & Code
+        & Steady
+        & $L_{\mathrm{in}}=45$
+          $L_{\mathrm{case}}=45$ 
+          % $L_{\mathrm{out}}=0$ 
+          $L=90$ 
+        & Fluid only; 
+          $U=0.5$ m/s;
+          $p=101.325$ kPa;
+        & 
+          $QoI_{\mathrm{hydro}}$: Axial velocity \\
+        
+        \midrule
+        Radial conduction
+        & Code
+        & Steady
+        & $L_{\mathrm{in}}=11.25$
+          $L_{\mathrm{case}}=45$ 
+          % $L_{\mathrm{out}}=0$
+          $L=56.25$
+        & Solid conduction only; Uniform heat source $q=35e7 W/m^3$ &  
+          $QoI_{\mathrm{cond}}$: Radial temperature solid \\
+        
+        \midrule
+        Thermal diffusion
+        & Code
+        & Transient
+        & $L_{\mathrm{in}}=11.25$
+          $L_{\mathrm{case}}=45$
+          % $L_{\mathrm{out}}=0$ 
+          $L=56.25$
+        & Transient thermal diffusion;
+          Fluid $T_0=20^\circ$C;
+          Solid $T_0=30^\circ$C;
+        & 
+          $QoI_{\mathrm{diff}}$: Radial temperature fluid \\
+        
+        \midrule
+        Coupled pipe
+        & Solution
+        & Steady
+        & $L_{\mathrm{in}}=45$
+          $L_{\mathrm{case}}=45$
+          % $L_{\mathrm{out}}=0$
+          $L=90$
+        & Steady conjugate heat transfer;
+          $U_{\mathrm{in}}=0.5$ m/s;
+          $p_{\mathrm{out}}=101.325$ kPa;
+          $T_{solid}=50^\circ$C.
+        & 
+          $QoI_{\mathrm{pipe}}$: Bulk fluid temperature \\
+        
+        \midrule
+        Simplified EDDS
+        & Solution
+        & Transient
+        & $L_{\mathrm{in}}=2.021$
+          $L_{\mathrm{case}}=7.2$
+          $L_{\mathrm{out}}=42.5$
+          $L=51.730$
+        & Transient conjugate heat transfer;
+          $U_{\mathrm{in}}=0.5$ m/s;
+          $T_{\mathrm{in}}=20^\circ$C;
+          $p_{\mathrm{out}}=101.325$ kPa;
+          volumetric heat source applied to casing.
+        &  $QoI_{\mathrm{EDDS}}$: Cross-sectional average temperature \\
+        
+        \bottomrule
+    \end{tabular}
     \label{tab:geometry_qty}
 \end{table*}
 
+
 To achieve this, the pipe length is selected to exceed both the hydrodynamic and thermal entry lengths, given by
 
+% \begin{equation}
+% \small
+% L_{\text{hydro}} = 0.05\,Re\,D \approx 35~\text{mm}, \quad
+% L_{\text{therm}} = 0.05\,Re\,Pr\,D \approx 25~\text{mm}
+% \end{equation}
 \begin{equation}
-\small
-L_{\text{hydro}} = 0.05\,Re\,D \approx 35~\text{mm}, \quad
-L_{\text{therm}} = 0.05\,Re\,Pr\,D \approx 25~\text{mm}
+\begin{aligned}
+L_{\mathrm{hydro}} &= 0.05\,Re\,D \approx 35~\mathrm{mm}, \\
+L_{\mathrm{therm}} &= 0.05\,Re\,Pr\,D \approx 25~\mathrm{mm}.
+\end{aligned}
 \end{equation}
-
 where $Re$ is the Reynolds number, $Pr$ is the Prandtl number, and $D$ is the pipe diameter. These conditions ensure fully developed flow and thermal fields and support rigorous assessment of discretization accuracy under steady-state assumptions.
 
 In contrast, the solution verification cases are designed to more closely represent the medical device configuration. These cases incorporate increased geometric complexity and are modeled under transient conditions to capture time-dependent system behavior and assess numerical uncertainty under application relevant conditions.
@@ -72,7 +158,6 @@ The fluid domain (air) is modeled as an incompressible, Newtonian fluid with con
 \begin{equation}\label{eqn:thermalEnergy}
    \frac{\partial(\rho c_p T)}{\partial t} + \nabla \cdot (\rho c_p \mathbf{U} T) = \nabla \cdot (\kappa \nabla T) + S_E 
 \end{equation}
-
 where $\mathbf{U}$ is the fluid velocity, $T$ is the temperature, $t$ is time, $\rho$ is density, $p$ is pressure, $\mathbf{g}$ is gravitational acceleration, $\tau$ is the shear stress, $c_p$ is specific heat capacity, $\kappa$ is thermal conductivity, and $S_E$ is the volumetric heat source \cite{Batchelor2000,ferziger2002cfd}.
 
 \subsubsection*{Solid Region}
@@ -89,9 +174,10 @@ Thermophysical properties used for air (fluid) and nickel (solid casing) are sum
 
 \begin{table}[htbp]
 % \scriptsize
-\footnotesize
+% \footnotesize
+\small
 \centering
-\caption{Material properties used in simulations.}
+\caption{Material properties.}
 \label{tab:properties}
 \begin{tabular}{lccc}
 \toprule
@@ -103,10 +189,9 @@ Thermal conductivity & \( \kappa \) [W/(m·K)] & 0.027 & 90.9 \\
 Viscosity & \( \mu \) [Pa·s] & \( 1.8 \times 10^{-5} \) & — \\
 \bottomrule
 \end{tabular}
-\end{table}
-
-\subsubsection*{Boundary and Initial Conditions (B\&IC)}
-
+\end{table} 
+% \subsubsection*{Boundary and Initial Conditions (B\&IC).}
+\textit{Boundary and Initial Conditions (B\&IC).}
 Boundary and initial conditions are defined to isolate the governing physical processes for each verification configuration. For code verification, simplified conditions are applied to enable comparison with analytical solutions. The hydrodynamic case assumes steady, isothermal flow with a uniform inlet velocity and fixed outlet pressure, while all walls are maintained at a constant temperature. The radial conduction case applies a uniform volumetric heat source within the solid domain with specified temperature at the outer boundary and an adiabatic interface to isolate conduction.
 
 For solution verification, boundary conditions reflect coupled fluid-thermal behavior. The fluid enters with a uniform velocity of 0.5~m/s and temperature of 20$^\circ$C, with outlet pressure fixed at 101.325~kPa and zero-gradient conditions applied to velocity and temperature. No-slip conditions are applied at all walls, and conjugate heat transfer is enforced at the fluid-solid interface. For transient simulations, both domains are initialized at 20$^\circ$C, with the fluid initially at rest, and a volumetric heat source is applied within the solid casing for a specified duration.
@@ -139,7 +224,58 @@ where $\phi_{\text{StREEQ}}$ is the extrapolated QoI obtained from the StREEQ re
 
 \subsection{Verification Study Design} 
 
-Verification studies are designed to isolate sources of numerical error and assess solver performance across increasing levels of physical and geometric complexity. The study is divided into code verification and solution verification, followed by resolution studies used to quantify discretization error and assess solver sensitivity.
+Verification studies are designed to isolate sources of numerical error and assess solver performance across increasing levels of physical and geometric complexity. The study is divided into code verification and solution verification, followed by resolution studies used to quantify discretization error and assess solver sensitivity. A summary of the spatial and temporal resolutions used across all verification studies is provided in Table~\ref{tab:resolutions}.
+
+\begin{table*}[htbp]
+    \centering
+    \caption{Spatial and temporal resolution parameters used in the verification studies.}
+    \begin{tabular}{p{2.75cm}p{4.25cm}p{5.75cm}p{2.0cm}}
+        \toprule
+        Study & $h$ [mm] & $\Delta t$ [s] & Refinement \\
+        \midrule
+        Hydrodynamic
+            & 0.43, 0.22, 0.11, 0.088
+            & --
+            & Spatial \\
+
+        Radial conduction
+            & 0.140, 0.071, 0.035
+            & --
+            & Spatial \\
+
+        Thermal diffusion
+            & 0.130, 0.065, 0.032
+            & 0.005, 0.0005, 0.00005
+            & Co-refined \\
+
+        Coupled pipe
+            & 0.43, 0.22, 0.11, 0.088
+            & --
+            & Spatial \\
+
+        Simplified EDDS
+            & 0.37, 0.29, 0.23, 0.18, 0.14, 0.11, 0.091
+            & 0.004, 0.0035, 0.0025, 0.002, 0.0016, 0.0014, 0.001
+            & Co-refined \\
+
+        Decoupled timestep
+            & 0.230
+            & 0.006, 0.0042, 0.003, 0.0021, 0.0015, 0.0011, 0.0007, 0.0005, 0.0004,0.0003
+            & Fixed mesh \\
+
+        Decoupled mesh
+            & 0.370, 0.290, 0.230, 0.180, 0.140, 0.110, 0.091
+            & 0.0050
+            & Fixed timestep \\
+
+        Solver tolerance
+            & 0.230
+            & 0.0050
+            & $10^{-3}$--$10^{-8}$ \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:resolutions}
+\end{table*}
 
 \subsubsection{Code Verification Studies}
 Code verification evaluates whether the numerical implementation correctly solves the governing equations by comparison with analytical solutions. These studies are conducted in simplified configurations to isolate individual physical processes.
