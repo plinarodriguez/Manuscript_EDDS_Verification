@@ -1,6 +1,5 @@
 This section presents the results of the verification studies used to assess the numerical accuracy and convergence behavior of the computational model. The analysis begins with steady-state code verification, where numerical solutions are compared against analytical benchmarks for fluid flow and heat conduction. This is followed by solution verification studies, including both steady-state and transient configurations, to quantify discretization error arising from spatial and temporal resolution, as well as solver tolerance. Together, these results provide evidence of numerical correctness, convergence, and overall model credibility.
 
-
 \subsection{Code Verification}
 Code verification is performed to assess the correctness of the numerical implementation through comparison with analytical solutions. Three problems are considered to independently verify the fluid and thermal components of the \texttt{chtMultiRegionFoam} solver: Hagen--Poiseuille flow for laminar momentum transport, steady-state radial conduction with internal heat generation \cite{hagenPoisueille, chtMultiRegion}, and transient thermal diffusion using a separation-of-variables Bessel-function solution. The transient diffusion configuration additionally verifies the transient thermal coupling behavior at the fluid-solid interface by ensuring that the imposed solid temperature response is accurately transferred into the fluid region. Although the full conjugate heat transfer solver is used, the configurations are constructed to isolate fluid flow and heat conduction, respectively. This approach enables rigorous verification of each governing equation prior to evaluating the fully coupled system under solution verification.
 
@@ -78,7 +77,7 @@ Figure~\ref{fig:scatterTemperature} shows that the numerical temperature field c
 
 
 \subsubsection{Transient Thermal Diffusion Verification}
-Following isolated verification of the hydrodynamic and steady-state radial conduction models, a transient thermal diffusion case is used to bridge the isolated verification studies and the fully coupled transient conjugate heat transfer model. In order to reduce the governing energy equation to a radial diffusion problem the fluid velocity was set to zero. This isolates transient thermal transport and interface temperature transfer from the solid to the fluid region. The $L_2$ error is computed at a cross section, halfway along the heated fluid region, by comparing the simulated temperature, at each radial position, to the corresponding analytical radial temperature obtained from Eq.~\ref{eq:bessel_theta_solution} and Eq.~\ref{eq:dimensional_temperature}. Figure~\ref{fig:transientDiffusionConvergence} shows the normalized $L_2$ error as a function of representative mesh length for multiple transient times. 
+Following isolated verification of the hydrodynamic and steady-state radial conduction models, a transient thermal diffusion case is used to bridge the isolated verification studies and the fully coupled transient conjugate heat transfer model. In order to reduce the governing energy equation to a radial diffusion problem the fluid velocity was set to zero. This isolates transient thermal transport and interface temperature transfer from the solid to the fluid region. The $L_2$ error is computed at a cross section, halfway along the heated fluid region, by comparing the simulated temperature, at each radial position, to the corresponding analytical radial temperature obtained from Eq.~\ref{eq:bessel_theta_solution} and Eq.~\ref{eq:dimensional_temperature}. Figure~\ref{fig:transientDiffusionConvergence} shows the normalized $L_2$ error as a function of representative cell size for multiple transient times. 
 
 \begin{figure}[htbp!]
     \centering
@@ -117,12 +116,12 @@ Following independent verification of the fluid and solid governing equations, a
   \label{fig:scatterTemp}
 \end{figure}
 
-To quantify convergence, the bulk fluid temperature was evaluated downstream of the thermal development region at 30~mm and compared across mesh resolutions using an extrapolated solution obtained from the \texttt{StREEQ} method. Figure~\ref{fig:tempErrs_mesh} shows the relative error as a function of representative mesh length on a log-log scale. The error decreases consistently with refinement, resulting in an observed order of convergence of $p = 1.90$, which is consistent with near second-order spatial accuracy. These results demonstrate that the coupled solver exhibits consistent convergence behavior and accurately captures the thermally developing flow.
+To quantify convergence, the bulk fluid temperature was evaluated downstream of the thermal development region at 30~mm and compared across mesh resolutions using an extrapolated solution obtained from the \texttt{StREEQ} method. Figure~\ref{fig:tempErrs_mesh} shows the relative error as a function of representative cell size on a log-log scale. The error decreases consistently with refinement, resulting in an observed order of convergence of $p = 1.90$, which is consistent with near second-order spatial accuracy. These results demonstrate that the coupled solver exhibits consistent convergence behavior and accurately captures the thermally developing flow.
 
 \begin{figure}[htbp!]
     \centering
     \includegraphics[width=1.0 \linewidth]{figures/code_verification/graetz/relative_err_observedP_mesh_Tbulk.png}
-    \caption{Relative error in bulk temperature versus representative mesh length, with observed order of convergence $p = 1.90$.}
+    \caption{Relative error in bulk temperature versus representative mesh cell size, with observed order of convergence $p = 1.90$.}
     \label{fig:tempErrs_mesh}
 \end{figure}
 
