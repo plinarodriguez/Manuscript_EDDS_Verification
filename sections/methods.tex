@@ -214,7 +214,7 @@ For code verification with a known analytical solution, the analytical solution 
 \begin{equation}
 L_2 = \left( \frac{\sum_i (\phi_{i,\text{num}} - \phi_{i,\text{analytic}})^2\text{V}_i}{\sum_i (\phi_{i,\text{analytic}})^2 \text{V}_i} \right)^{1/2}
 \end{equation}
-where $\phi_{i,\text{num}}$ and $\phi_{i,\text{analytic}}$ represent the numerical and analytical values of the QoI at the $i$th centroid and $\text{vol}_i$ is the $i$th centroid volume.
+where $\phi_{i,\text{num}}$ and $\phi_{i,\text{analytic}}$ represent the numerical and analytical values of the QoI at the $i$th centroid and $\text{V}_i$ is the $i$th centroid volume.
 
 For solution verification, QoIs are compared using the relative error, defined as
 \begin{equation}
@@ -258,7 +258,7 @@ Verification studies are designed to isolate sources of numerical error and asse
             & 0.004, 0.0035, 0.0025, 0.002, 0.0016, 0.0014, 0.001
             & Co-refined \\
 
-        Decoupled timestep
+        Decoupled time step
             & 0.230
             & 0.006, 0.0042, 0.003, 0.0021, 0.0015, 0.0011, 0.0007, 0.0005, 0.0004,0.0003
             & Fixed mesh \\
@@ -266,7 +266,7 @@ Verification studies are designed to isolate sources of numerical error and asse
         Decoupled mesh
             & 0.370, 0.290, 0.230, 0.180, 0.140, 0.110, 0.091
             & 0.0050
-            & Fixed timestep \\
+            & Fixed time step \\
 
         Solver tolerance
             & 0.230
@@ -306,8 +306,6 @@ Discretization error is assessed using a co-refined set of seven meshes (M1--M7)
 Discretization error is assessed through systematic refinement of spatial and temporal resolution. Code verification studies employ spatial refinement only under steady-state conditions, while solution verification studies use a co-refined approach in which mesh resolution and time step are reduced simultaneously to evaluate convergence in the coupled transient system.
 
 \paragraph{Solver Tolerance} 
-Solver sensitivity is assessed by varying solver convergence tolerances over several orders of magnitude while holding spatial and temporal resolution fixed. The resulting variation in QoIs is used to quantify the influence of solver convergence criteria on numerical error.
-
 Solver sensitivity is assessed by varying linear solver convergence tolerances over several orders of magnitude while holding spatial and temporal resolution fixed. Convergence tolerances of $10^{-3}$, $10^{-4}$, $10^{-5}$, $10^{-6}$, $10^{-7}$, and $10^{-8}$ are evaluated at M3 and time step 0.005~s. The resulting variation in QoIs is used to quantify the influence of solver convergence criteria on numerical error. 
 
 \subsubsection{Decoupled Resolution Analysis}
@@ -329,7 +327,7 @@ The solid casing is modeled as a cylindrical annulus with inner radius $r_{in}$ 
 
 Under these assumptions, the governing equation for steady radial conduction in cylindrical coordinates is
 \begin{equation}
-\frac{1}{r}\frac{d}{dr}\left(r \frac{dT}{dr}\right) + \frac{S}{k} = 0.
+\frac{1}{r}\frac{d}{dr}\left(r \frac{dT}{dr}\right) + \frac{S}{\kappa} = 0.
 \end{equation}
 Integrating twice and applying the boundary conditions yields the analytical temperature distribution:
 \begin{equation}
@@ -339,7 +337,7 @@ T(r) = T_w
 \ln\left(\frac{r}{r_w}\right)
 \label{eq:solid_conduction}
 \end{equation}
-where $T(r)$ is the temperature as a function of radial position, $S$ is the uniform volumetric heat source, $k$ is the thermal conductivity, $r_{in}$ is the inner radius at the solid-fluid interface, $r_w$ is the outer wall radius, and $T_w$ is the prescribed temperature at the outer wall.
+where $T(r)$ is the temperature as a function of radial position, $S$ is the uniform volumetric heat source, $\kappa$ is the thermal conductivity, $r_{in}$ is the inner radius at the solid-fluid interface, $r_w$ is the outer wall radius, and $T_w$ is the prescribed temperature at the outer wall.
 
 \subsubsection{Transient Thermal Diffusion Model}
 The transient thermal diffusion model assumes zero fluid velocity, reducing the energy equation to a radial diffusion problem in cylindrical coordinates. The resulting governing equation is
@@ -377,7 +375,6 @@ QOI(h, \Delta t) = \beta_0 + \beta_1 h^{p_h} + \beta_2 \Delta t^{p_t}
 \label{eq:streeq_model_p2}
 \end{equation}
 where $QOI(h, \Delta t)$ is the quantity of interest as a function of representative mesh size $h$ and time step $\Delta t$, $\beta_0$ is the extrapolated solution at zero discretization, $\beta_1$ and $\beta_2$ are regression coefficients, and $p_h$ and $p_t$ are the observed orders of convergence associated with spatial and temporal refinement, respectively. This formulation does not require a constant mesh refinement factor. When only a single source of discretization error is present, the model reduces to a single-parameter regression in either $h$ or $\Delta t$.
-
 
 \subsection{Reproducibility and Computational Workflow}
 Reproducibility is treated as a foundational component of model credibility in this study. Verification activities rely on consistent and traceable computational processes to ensure that observed numerical behavior reflects controlled changes in resolution rather than unintended variability in model setup or execution.
