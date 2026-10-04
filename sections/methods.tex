@@ -1,4 +1,4 @@
-This study is motivated by a heat transfer driven electronic drug delivery system (EDDS) medical device, which uses applied power to heat fluid flowing through the device and into a users mouth cavity. While the full system includes complex components such as coils for heating and an expanding mouthpiece, verifying the entire system limits the level of rigor achievable in code and solution verification due to geometric and multiphysics complexity. 
+This study is motivated by a heat transfer driven electronic drug delivery system (EDDS) medical device, which uses applied power to heat fluid flowing through the device and into a user's mouth cavity. While the full system includes complex components such as coils for heating and an expanding mouthpiece, verifying the entire system limits the level of rigor achievable in code and solution verification due to geometric and multiphysics complexity. 
 
 To enable systematic verification, a simplified geometry is adopted that preserves the dominant transport mechanisms of laminar flow and conjugate heat transfer while minimizing geometric complexity. This reduction enables direct comparison to analytical solutions and supports high-resolution studies. By verifying key physical processes in isolation, this approach establishes confidence in the numerical modeling framework and provides a foundation for progressively reintroducing complexity in future validation and application studies.
 
@@ -134,7 +134,7 @@ To achieve this, the pipe length is selected to exceed both the hydrodynamic and
 \begin{equation}
 \begin{aligned}
 L_{\mathrm{hydro}} &= 0.05\,Re\,D \approx 35~\mathrm{mm}, \\
-L_{\mathrm{therm}} &= 0.05\,Re\,Pr\,D \approx 25~\mathrm{mm}.
+L_{\mathrm{therm}} &= 0.05\,Re\,Pr\,D \approx 25~\mathrm{mm},
 \end{aligned}
 \end{equation}
 where $Re$ is the Reynolds number, $Pr$ is the Prandtl number, and $D$ is the pipe diameter. These conditions ensure fully developed flow and thermal fields and support rigorous assessment of discretization accuracy under steady-state assumptions.
@@ -150,13 +150,13 @@ Simulations were performed using the open-source finite-volume solver OpenFOAM. 
 The fluid domain (air) is modeled as an incompressible, Newtonian fluid with constant properties under laminar flow conditions. The governing equations include conservation of mass (Eq.~\ref{eqn:conservationMass}), conservation of momentum (Eq.~\ref{eqn:conservationMomentum}), and thermal energy transport (Eq.~\ref{eqn:thermalEnergy}).
 
 \begin{equation}\label{eqn:conservationMass}
-  \dfrac{\partial \rho}{\partial t} + \nabla \cdot (\rho \mathbf{U}) = 0 
+  \dfrac{\partial \rho}{\partial t} + \nabla \cdot (\rho \mathbf{U}) = 0,
 \end{equation}
 \begin{equation}\label{eqn:conservationMomentum}
-    \frac{\partial (\rho \mathbf{U})}{\partial t} + \nabla \cdot(\rho \mathbf{U} \mathbf{U}) = -\nabla p + \nabla \cdot \tau +\rho g 
+    \frac{\partial (\rho \mathbf{U})}{\partial t} + \nabla \cdot(\rho \mathbf{U} \mathbf{U}) = -\nabla p + \nabla \cdot \tau +\rho g,
 \end{equation}
 \begin{equation}\label{eqn:thermalEnergy}
-   \frac{\partial(\rho c_p T)}{\partial t} + \nabla \cdot (\rho c_p \mathbf{U} T) = \nabla \cdot (\kappa \nabla T) + S_E 
+   \frac{\partial(\rho c_p T)}{\partial t} + \nabla \cdot (\rho c_p \mathbf{U} T) = \nabla \cdot (\kappa \nabla T) + S_E,
 \end{equation}
 where $\mathbf{U}$ is the fluid velocity, $T$ is the temperature, $t$ is time, $\rho$ is density, $p$ is pressure, $\mathbf{g}$ is gravitational acceleration, $\tau$ is the shear stress, $c_p$ is specific heat capacity, $\kappa$ is thermal conductivity, and $S_E$ is the volumetric heat source \cite{Batchelor2000,ferziger2002cfd}.
 
@@ -164,7 +164,7 @@ where $\mathbf{U}$ is the fluid velocity, $T$ is the temperature, $t$ is time, $
 The solid casing (nickel) is modeled as an isotropic material with constant thermal properties. Transient heat conduction in the solid is governed by
 
 \begin{equation}\label{eqn:conduction}
-   \frac{\partial(\rho c_p T)}{\partial t}  = \nabla \cdot (\kappa \nabla T) + S_E 
+   \frac{\partial(\rho c_p T)}{\partial t}  = \nabla \cdot (\kappa \nabla T) + S_E.
 \end{equation}
 The variables $\rho$, $c_p$, $\kappa$, and $S_E$ retain the same physical interpretations as in the fluid region. At the fluid-solid interface, continuity of temperature and heat flux is enforced to ensure conjugate heat transfer.
 
@@ -212,13 +212,13 @@ Quantities of interest (QoIs) are defined to isolate error contributions associa
 For code verification with a known analytical solution, the analytical solution is evaluated at the same spatial cross sections as the numerical solution. Pointwise comparisons are performed using the normalized $L_2$ error, defined as:
 
 \begin{equation}
-L_2 = \left( \frac{\sum_i (\phi_{i,\text{num}} - \phi_{i,\text{analytic}})^2\text{V}_i}{\sum_i (\phi_{i,\text{analytic}})^2 \text{V}_i} \right)^{1/2}
+L_2 = \left( \frac{\sum_i (\phi_{i,\text{num}} - \phi_{i,\text{analytic}})^2\text{V}_i}{\sum_i (\phi_{i,\text{analytic}})^2 \text{V}_i} \right)^{1/2},
 \end{equation}
 where $\phi_{i,\text{num}}$ and $\phi_{i,\text{analytic}}$ represent the numerical and analytical values of the QoI at the $i$th centroid and $\text{V}_i$ is the $i$th centroid volume.
 
 For solution verification, QoIs are compared using the relative error, defined as
 \begin{equation}
-Err_{\text{relative}} = \frac{|\phi_{\text{num}} - \phi_{\text{StREEQ}}|}{\phi_{\text{StREEQ}}}
+Err_{\text{relative}} = \frac{|\phi_{\text{num}} - \phi_{\text{StREEQ}}|}{\phi_{\text{StREEQ}}},
 \end{equation}
 where $\phi_{\text{StREEQ}}$ is the extrapolated QoI obtained from the StREEQ regression method.
 
@@ -286,10 +286,10 @@ Code verification evaluates whether the numerical implementation correctly solve
 This configuration isolates fully developed laminar pipe flow (Hagen-Poiseuille flow) under steady, isothermal conditions. Heat transfer is neglected, and the pipe length is set to exceed the hydrodynamic entry length to ensure fully developed flow. The fluid enters with a uniform velocity of 0.5~m/s and temperature of 20$^\circ$C, with outlet pressure fixed at 101.325~kPa. All walls enforce no-slip conditions and are maintained at constant temperature. The QoI, $QoI_{\text{hydro}}$, is the axial velocity profile at a cross section located within the fully developed region, enabling direct comparison with the analytical solution. Spatial convergence is assessed using four progressively refined meshes with representative cell sizes of 0.43~mm, 0.22~mm, 0.11~mm, and 0.088~mm.
 
 \paragraph{Radial Conduction Model}
-This configuration isolates steady-state heat conduction in the solid domain. Fluid effects are removed by imposing an adiabatic boundary at the fluid-solid interface. A uniform volumetric heat source of 18 Watts is applied within the casing, and the outer wall is maintained at a fixed temperature, 293.15 K. The QoI, $QoI_{\text{cond}}$, is the radial temperature profile at the midpoint of the casing, sufficiently far from boundary effects. Spatial convergence is assessed using three progressively refined meshes with representative cell sizes of $1.4e^{-4}$~m, $7.1e^{-5}$~m, and $3.5e^{-5}$~m.
+This configuration isolates steady-state heat conduction in the solid domain. Fluid effects are removed by imposing an adiabatic boundary at the fluid-solid interface. A uniform volumetric heat source of 18 Watts is applied within the casing, and the outer wall is maintained at a fixed temperature, 293.15 K. The QoI, $QoI_{\text{cond}}$, is the radial temperature profile at the midpoint of the casing, sufficiently far from boundary effects. Spatial convergence is assessed using three progressively refined meshes with representative cell sizes of 0.14~mm, 0.071~mm, and 0.035~mm.
 
 \paragraph{Transient Thermal Diffusion Model}
-This configuration isolates transient thermal diffusion in the fluid domain by applying a zero fluid velocity, eliminating advective transport effects. The governing equation reduces to a transient diffusion problem and an analytical solution is obtained through separation of variables with Bessel functions. The fluid domain is initialized at $20^{\circ}$C, while the solid domain is initialized at $30^{\circ}$C. The QoI, $QoI_{\text{diff}}$, is the transient radial temperature profile extracted at a cross section in the fluid region at 1.2 times the case region. Spatial and temporal convergence are assessed using three co-refined meshes and time-steps with representative cell sizes of $1.3e^{-4}$~m, $6.5e^{-5}$~m, and $3.2e^{-5}$~m and co-refined time steps of $5e^{-3}$~s,$5e^{-4}$~s, and $5e^{-5}$~s.
+This configuration isolates transient thermal diffusion in the fluid domain by applying a zero fluid velocity, eliminating advective transport effects. The governing equation reduces to a transient diffusion problem and an analytical solution is obtained through separation of variables with Bessel functions. The fluid domain is initialized at $20^{\circ}$C, while the solid domain is initialized at $30^{\circ}$C. The QoI, $QoI_{\text{diff}}$, is the transient radial temperature profile extracted at a cross section in the fluid region at 1.2 times the case region. Spatial and temporal convergence are assessed using three co-refined meshes and time-steps with representative cell sizes of 0.13~mm, 0.065~mm, and 0.032~mm and co-refined time steps of $5\times10^{-3}$~s, $5\times10^{-4}$~s, and $5\times10^{-5}$~s.
 
 \subsubsection{Solution Verification Studies}
 Solution verification assesses numerical uncertainty in coupled fluid-thermal simulations without available analytical solutions. The study uses a set of seven mesh resolutions with corresponding characteristic cell sizes, paired with decreasing time steps to assess both spatial and temporal convergence. This range of resolutions enables evaluation of discretization error under conditions representative of the coupled fluid-thermal system.
@@ -317,7 +317,7 @@ Analytical solutions are used in code verification to assess whether the numeric
 \subsubsection{Hagen-Poiseuille Flow}
 The analytical solution for the axial velocity profile of fully developed laminar flow in a circular pipe is given by
 \begin{equation}
-    u(r) = \frac{\Delta P}{4 \mu L} \left( R^2 - r^2 \right)
+    u(r) = \frac{\Delta P}{4 \mu L} \left( R^2 - r^2 \right),
 \label{eq:poiseuille}
 \end{equation}
 where $u$ is the axial velocity as a function of radial position $r$, $\Delta P$ is the pressure drop along the pipe of length $L$, $\mu$ is the dynamic viscosity, and $R$ is the pipe radius \cite{hagenPoisueille, heat_transfer}. 
@@ -334,7 +334,7 @@ Integrating twice and applying the boundary conditions yields the analytical tem
 T(r) = T_w 
 - \frac{S}{4k}(r^2 - r_w^2)
 + \frac{S r_{in}^2}{2k} 
-\ln\left(\frac{r}{r_w}\right)
+\ln\left(\frac{r}{r_w}\right),
 \label{eq:solid_conduction}
 \end{equation}
 where $T(r)$ is the temperature as a function of radial position, $S$ is the uniform volumetric heat source, $\kappa$ is the thermal conductivity, $r_{in}$ is the inner radius at the solid-fluid interface, $r_w$ is the outer wall radius, and $T_w$ is the prescribed temperature at the outer wall.
@@ -343,25 +343,24 @@ where $T(r)$ is the temperature as a function of radial position, $S$ is the uni
 The transient thermal diffusion model assumes zero fluid velocity, reducing the energy equation to a radial diffusion problem in cylindrical coordinates. The resulting governing equation is
 
 \begin{equation}
-    \frac{\partial T}{\partial t}=\alpha\left(\frac{1}{r}\frac{\partial}{\partial r}\left(r\frac{\partial T}{\partial r}\right)\right)
+    \frac{\partial T}{\partial t}=\alpha\left(\frac{1}{r}\frac{\partial}{\partial r}\left(r\frac{\partial T}{\partial r}\right)\right),
 \label{eq:transient_diffusion}
 \end{equation}
 where $T$ is temperature, $t$ is time, $r$ is the radial coordinate, and $\alpha$ is the thermal diffusivity. For a cylinder the solution is written in terms of the dimensionless temperature
 
 \begin{equation}
-    \theta(r,t)=\frac{T(r,t)-T_{\text{solid}}}{T_0-T_{\text{solid}}}
+    \theta(r,t)=\frac{T(r,t)-T_{\text{solid}}}{T_0-T_{\text{solid}}},
 \label{eq:theta_definition}
 \end{equation}
 where $T_0$ is the initial temperature and $T_{\text{solid}}$ is the temperature at the wall (fluid-solid interface). The solid has a constant temperature $T_0+10^{\circ}C$. Applying separation of variables gives
 
 \begin{equation}
-    \theta(r,t)=\sum_{n=1}^{\infty}\frac{2 J_0 \lambda_n r}{J_1 R \lambda_n^2 }\exp\left(-\lambda_n^2 \frac{\alpha t}{R^2}\right)
+    \theta(r,t)=\sum_{n=1}^{\infty}\frac{2 J_0 \lambda_n r}{J_1 R \lambda_n^2 }\exp\left(-\lambda_n^2 \frac{\alpha t}{R^2}\right),
 \label{eq:bessel_theta_solution}
 \end{equation}
 where $J_0$ and $J_1$ are Bessel functions of the first kind of order zero and one, respectively, $R$ is the pipe radius, and $\lambda_n$ are the positive roots of $J_0(\lambda_n)=0$ associated with the wall temperature boundary condition. The dimensional analytical temperature is then recovered as
 
 \begin{equation}
-    T(r,t)=T_{\text{solid}}+\theta(r,t)\left(T_0 - T_{\text{solid}}\right)
 \label{eq:dimensional_temperature}
 \end{equation}
 The analytical solution was evaluated using a truncated series expansion with $n=100$ terms. Additional sensitivity studies were performed for truncated expansions ranging from $n=5$ to $n=5000$ where errors were negligible beyond approximately $n=25$. 
@@ -371,7 +370,7 @@ While the analytical benchmark problems represent simplified physical systems, t
 \subsection{Extrapolation  Method}
 The \texttt{StREEQ} method is used to quantify discretization error and evaluate the convergence behavior of the numerical solution \cite{streeq_theory,streeq_git}. The method estimates the observed order of convergence and extrapolates the solution to the zero-discretization limit. When numerical error is influenced by both spatial and temporal resolution, a regression-based model is used to capture their combined contributions:
 \begin{equation}
-QOI(h, \Delta t) = \beta_0 + \beta_1 h^{p_h} + \beta_2 \Delta t^{p_t}
+QOI(h, \Delta t) = \beta_0 + \beta_1 h^{p_h} + \beta_2 \Delta t^{p_t},
 \label{eq:streeq_model_p2}
 \end{equation}
 where $QOI(h, \Delta t)$ is the quantity of interest as a function of representative mesh size $h$ and time step $\Delta t$, $\beta_0$ is the extrapolated solution at zero discretization, $\beta_1$ and $\beta_2$ are regression coefficients, and $p_h$ and $p_t$ are the observed orders of convergence associated with spatial and temporal refinement, respectively. This formulation does not require a constant mesh refinement factor. When only a single source of discretization error is present, the model reduces to a single-parameter regression in either $h$ or $\Delta t$.
