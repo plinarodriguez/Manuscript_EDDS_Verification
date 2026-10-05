@@ -5,7 +5,7 @@ Code verification is performed to assess the correctness of the numerical implem
 
 \subsubsection{Hydrodynamic (Fluid Only) Model}
 To verify the momentum transport implementation, a steady-state laminar pipe flow simulation was compared against the analytical Hagen-Poiseuille solution. Spatial convergence was assessed using four progressively refined meshes with representative cell sizes of 0.43~mm, 0.22~mm, 0.11~mm, and 0.088~mm while maintaining identical geometry and boundary conditions. Axial velocity was evaluated at a cross-sectional plane located beyond the hydrodynamic entry length to ensure fully developed flow. The numerical velocity field was compared pointwise with the analytical solution (Eq.~\ref{eq:poiseuille}).
-Figure~\ref{fig:scatterVelocity} shows that the numerical solution progressively aligns with the analytical parabolic profile as mesh resolution improves for three resolutions: coarse (0.43~mm), medium (0.22~mm), and fine (0.11~mm). The coarse mesh overpredicts velocity near the centerline due to insufficient spatial resolution, while refinement at the finest mesh achieves the best agreement.
+Figure~\ref{fig:scatterVelocity} shows three of the four meshes: coarse (0.43~mm), medium (0.22~mm), and fine (0.11~mm); the finest mesh (0.088~mm) is not shown but is included in the error analysis of Figure~\ref{fig:errorVsLength}. The numerical solution progressively aligns with the analytical parabolic profile as mesh resolution improves. The coarse mesh overpredicts velocity near the centerline due to insufficient spatial resolution, while the fine mesh achieves the best agreement of the three.
 
 \begin{figure}[htbp!]
   \centering
@@ -26,7 +26,7 @@ Figure~\ref{fig:scatterVelocity} shows that the numerical solution progressively
     \caption{Fine Mesh}
     \label{fig:sub3}
   \end{subfigure}
-  \caption{Simulated hydrodynamic model axial velocity by radial position at $QoI_{\text{hydro}}$, overlaid with the analytical Hagen-Poiseuille solution (black points).}
+  \caption{Simulated hydrodynamic model axial velocity by radial position at $QoI_{\text{hydro}}$, overlaid with the analytical Hagen-Poiseuille solution (black points). Three of the four meshes are shown.}
   \label{fig:scatterVelocity}
 \end{figure}
 
