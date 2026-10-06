@@ -143,11 +143,11 @@ In contrast, the solution verification cases are designed to more closely repres
 
 \subsection{Governing Equations \& Numerical Approach}
 
-Simulations were performed using the open-source finite-volume solver OpenFOAM. Conjugate heat transfer between the solid casing and fluid domain is modeled using the \texttt{chtMultiRegionFoam} solver, which solves the compressible Navier-Stokes equations in the fluid region and transient heat conduction in both fluid and solid domains without phase change. Conjugate coupling is enforced at the fluid-solid interface through continuity of temperature and heat flux. All equations are discretized using the finite-volume method on unstructured hexahedral meshes.
+Simulations were performed using the open-source finite-volume solver OpenFOAM. Conjugate heat transfer between the solid casing and fluid domain is modeled using the \texttt{chtMultiRegionFoam} solver, which solves the compressible Navier-Stokes equations in the fluid region, here with a constant-density equation of state, and transient heat conduction in both fluid and solid domains without phase change. Conjugate coupling is enforced at the fluid-solid interface through continuity of temperature and heat flux. All equations are discretized using the finite-volume method on unstructured hexahedral meshes.
 
 \subsubsection*{Fluid Region}
 
-The fluid domain (air) is modeled as compressible, Newtonian fluid with constant properties under laminar flow conditions. The governing equations include conservation of mass (Eq.~\ref{eqn:conservationMass}), conservation of momentum (Eq.~\ref{eqn:conservationMomentum}), and thermal energy transport (Eq.~\ref{eqn:thermalEnergy}).
+The fluid (air) is modeled as a Newtonian fluid with constant properties under laminar flow conditions. Its density is held constant through the constant-density (\texttt{rhoConst}) equation of state, so the compressible formulation of Eqs.~\ref{eqn:conservationMass}--\ref{eqn:thermalEnergy} reduces to constant-density flow. The governing equations include conservation of mass (Eq.~\ref{eqn:conservationMass}), conservation of momentum (Eq.~\ref{eqn:conservationMomentum}), and thermal energy transport (Eq.~\ref{eqn:thermalEnergy}).
 
 \begin{equation}\label{eqn:conservationMass}
   \dfrac{\partial \rho}{\partial t} + \nabla \cdot (\rho \mathbf{U}) = 0,
