@@ -177,15 +177,15 @@ Thermophysical properties used for air (fluid) and nickel (solid casing) are sum
 % \footnotesize
 \small
 \centering
-\caption{Material properties.}
+\caption{Material properties used in the simulations. The air thermal conductivity follows from $\kappa = \mu c_p/Pr$ with $Pr = 0.7$, as specified in the solver input. In the steady radial conduction case, the solid density and specific heat were reduced to $\rho = 0.089$~kg/m$^3$ and $c_p = 0.00444$~J/(kg·K) to accelerate convergence to steady state; the steady solution depends only on $\kappa$.}
 \label{tab:properties}
 \begin{tabular}{lccc}
 \toprule
 \textbf{Property} & \textbf{Symbol} & \textbf{Air (fluid)} & \textbf{Nickel (solid)} \\
 \midrule
-Density & \( \rho \) [kg/m\textsuperscript{3}] & 1.225 & 8908 \\
+Density & \( \rho \) [kg/m\textsuperscript{3}] & 1.225 & 8900 \\
 Specific Heat & \( c_p \) [J/(kg·K)] & 1004.5 & 444 \\
-Thermal conductivity & \( \kappa \) [W/(m·K)] & 0.0259 & 90.9 \\
+Thermal conductivity & \( \kappa \) [W/(m·K)] & 0.0258 & 91 \\
 Viscosity & \( \mu \) [Pa·s] & \( 1.8 \times 10^{-5} \) & — \\
 \bottomrule
 \end{tabular}
