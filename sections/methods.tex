@@ -312,6 +312,7 @@ Solver sensitivity is assessed by varying linear solver convergence tolerances o
 An additional analysis is performed to examine the impact of independently refining spatial and temporal resolution. Two cases are considered: (1) fixed spatial resolution with varying time step, and (2) fixed time step with varying spatial resolution. This study highlights the potential for misleading conclusions when discretization parameters are varied independently, demonstrating the importance of consistent refinement strategies in assessing convergence behavior. In Case 1, the spatial resolution is fixed at mesh M3 while the time step is systematically reduced using a refinement factor of $\sqrt{2}$. Ten time steps are evaluated: 0.0060~s, 0.0042~s, 0.0030~s, 0.0021~s, 0.0015~s, 0.0011~s, 0.0007~s, 0.0005~s, 0.0004~s, and 0.0003~s. In Case 2, the time step is fixed at 0.005~s while spatial resolution is varied using the same set of seven meshes (M1-M7) defined in the solution verification studies.
 
 \subsection{Analytical Solutions}
+\label{subsec:analytical}
 Analytical solutions are used in code verification to assess whether the numerical implementation correctly represents the governing equations. Three problems are considered: fully developed laminar pipe flow, steady-state radial conduction with internal heat generation, and transient radial thermal diffusion in a fluid at rest.
 
 \subsubsection{Hagen-Poiseuille Flow}
