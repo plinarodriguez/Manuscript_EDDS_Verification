@@ -61,13 +61,13 @@ The equations, tables, figures, and associated analyses were reviewed for consis
 
 > English is generally excellent; it needs polishing, and some typos must be revised. Further punctuation marks should be checked throughout the paper, especially after the equations and at the end of the statements.
 
-The manuscript was reviewed and revised for grammar, typographical errors, and punctuation, including unwanted indentations following equations and at the ends of statements.
+The manuscript was reviewed and revised for grammar, typographical errors, and punctuation. Punctuation was added after equations and at the ends of statements where appropriate.
 
 ### Comment 1.9
 
 > Define the symbols used clearly and enumerate all the existing equations. Furthermore, the keywords and conclusion should be reformulated to reflect the paper's content accurately.
 
-The keywords were updated to include more verification relevant terms.
+The notation and equation presentation were reviewed and revised for consistency. Symbols were clarified and standardized, including $\kappa$, $S_E$, $R$, and the quantities of interest (QoIs). The keywords were updated to include more verification specific terms. The Conclusion was also revised to more accurately reflect the paper's content, including the three code-verification cases and their observed orders of convergence.
 
 ### Comment 1.10
 
@@ -75,17 +75,21 @@ The keywords were updated to include more verification relevant terms.
 
 The thermophysical properties used in the simulations are reported in Table 2 (page 3), including density, specific heat capacity, thermal conductivity, and viscosity for air and nickel.
 
+
+The thermophysical properties used in the simulations are reported in Table 2, including density, specific heat capacity, thermal conductivity, and viscosity for air and nickel. Table 2 was corrected to be consistent with the simulation inputs. The air dynamic viscosity was corrected from $1.48\times10^{-5}$ Pa$\cdot$s to $1.8\times10^{-5}$ Pa$\cdot$s.
+
+
 ### Comment 1.11
 
 > The following needs more details: Conjugate heat transfer. Fluid dynamics.
 
-Details regarding conjugate heat transfer and fluid dynamics are provided in Sections 2.2 and 2.3 (pages 2–3). Section 2.3 describes the incompressible laminar fluid formulation, governing conservation equations, solid heat conduction, and enforcement of temperature and heat-flux continuity at the fluid-solid interface. Boundary and initial conditions for the fluid-thermal configurations are also provided in Section 2.3.
+Details regarding conjugate heat transfer and fluid dynamics are provided in Sections 2.2 and 2.3. Section 2.3 describes the laminar fluid formulation using a compressible solver with a constant density equation of state, the governing conservation equations, solid heat conduction, and enforcement of temperature and heat flux continuity at the fluid solid interface. Boundary and initial conditions for the fluid thermal configurations are also provided in Section 2.3.
 
 ### Comment 1.12
 
 > Tabulate the geometry quantities for the code and solution verification studies.
 
-Table 1 (page 3) has been expanded to provide a comprehensive summary of the geometric quantities for all code and solution verification studies. The table reports the pipe inlet, pipe case, pipe outlet, and total pipe lengths for each study, together with the common pipe diameter and case thickness.
+Table 1 has been expanded to provide a comprehensive summary of the geometric quantities for all code and solution verification studies. The table reports the total pipe length and the applicable inlet, case, and outlet lengths for each study, together with the common pipe diameter and case thickness.
 
 ---
 
@@ -95,4 +99,4 @@ Table 1 (page 3) has been expanded to provide a comprehensive summary of the geo
 
 ### Comment 2.1
 
-*Response to be written.*
+Thank you for this comment. The Results section was revised to reduce repetition of methodological details already provided in the Methods section. In particular, repeated descriptions of the code-verification configurations, solver tolerance setup, and mesh and time step refinement pairings were removed or condensed. These study configurations and resolution parameters are now summarized in Table 3, allowing the Results section to focus more directly on the verification results and observed convergence behavior.
