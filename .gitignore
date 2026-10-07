@@ -1,0 +1,26 @@
+# Compiled manuscript: build it locally (or with the LaTeX Diff workflow); do not commit
+/*.pdf
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.xmpdata
+*.xmpi
+pdfa.xmpi
+
+# latexdiff outputs
+diff.tex
+diff.pdf
+
+# OS files
+.DS_Store
