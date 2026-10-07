@@ -6,8 +6,8 @@
 %%
 %%
 %%  This file's version and date are:
-		\def\versionno{1.18}
-		\def\versiondate{2022/01/10\space}
+		\def\versionno{1.22}
+		\def\versiondate{2024/01/30\space}
 %%
 %%  Author: John H. Lienhard V
 %%          Department of Mechanical Engineering
@@ -33,9 +33,6 @@
 %%
 %%  The title block is set by specific commands that are described in the asmejour-template.tex file.
 %%
-%%  The \section[]{} command's optional argument has been changed to better support pdf bookmarks, and
-%%  \section*[]{} is similarly modified.
-%%
 %%  The class defines abstract environment (with optional keywords) and a nomenclature environment.   
 %%  (LaTeX must be run twice to align the columns in the nomenclature list).
 %% 
@@ -43,7 +40,7 @@
 %%
 %% LICENSE:
 %%
-%% Copyright (c) 2022 John H. Lienhard
+%% Copyright (c) 2024 John H. Lienhard
 %%
 %% Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
 %% associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -71,46 +68,45 @@
   \RequirePackage{xparse}[2020/02/25]
 \fi 
 
-\RequirePackage{etoolbox}
+\RequirePackage{iftex}% provides \ifpdftex, etc.
 \RequirePackage{ifthen}
 
 %%%%%%%%%%%%%  Test compatibility of older distributions  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\providecommand\IfFormatAtLeastTF{\@ifl@t@r\fmtversion}% backward compatibility (thanks Ulrike Fischer)
+\providecommand\IfFormatAtLeastTF{\@ifl@t@r\fmtversion}% compare version to date; \If... added to latex 2020/10/01
+\providecommand\IfPackageAtLeastTF{\@ifpackagelater}%    compare version to date; \If... added to latex 2020/10/01
+\providecommand\IfPackageLoadedTF{\@ifpackageloaded}%    \If...added to latex 2021/11/15
 
 \IfFormatAtLeastTF{2020/02/25}{%
-	\ClassInfo{asmeconf}{Your LaTeX format is dated \fmtversion. LaTeX distributions 2020 or later are strongly recommended for best results}
+	\ClassInfo{asmeconf}{Your LaTeX format is dated \fmtversion. LaTeX distributions 2020/10/01 or later are strongly recommended, for best results}
 	}{%
-	\ClassError{asmeconf}{Your LaTeX format is dated \fmtversion.  Formats dated 2020 or later are recommended for the asmejour class. Older formats may generate errors or fail entirely}{Please UPDATE your LaTeX distribution to obtain best results. TeX Live is available for download at no charge: \string https://www.tug.org/texlive/.  (You can try to click past the errors for now, but your abstract will probably not compile properly.)}%
+	\ClassError{asmeconf}{Your LaTeX format is dated \fmtversion.  Formats dated 2020/10/01 or later are recommended for the asmejour class. Older formats may generate errors or fail entirely!}{Please UPDATE your LaTeX distribution to obtain best results. TeX Live is available for download at no charge: \string https://www.tug.org/texlive/.  You can try to click past the errors for now, but your abstract will probably not compile properly if you lack the xparse package [2020/02/25], and the code will crash entirely if you lack the iftex package [2019/11/07].}%
 }
 	
 \DeclareDocumentCommand\LogNote{m}{%   
 	\IfFormatAtLeastTF{2021/11/15}{% 
-		\ClassNoteNoLine{asmejour}{#1}% New with the recent LaTeX format
+		\ClassNoteNoLine{asmejour}{#1}% Added to LaTeX in Nov. 2021
 		}{%
 	    \ClassWarningNoLine{asmejour}{#1}%
 	}
 }
 
-%% provide iftex command \ifpdftex for those still running old distributions
-\IfFormatAtLeastTF{2019/11/07}{% 
-	\RequirePackage{iftex}% check whether pdftex or another engine is used
-	}{% 
-    \LogNote{The asmeconf class requires the missing package iftex---trying a work-around.}
-	% Code copied from iftex package written by the LaTeX3 Project (used under LPPL).
-    % \csname and \let construct useful for hiding \ifzzz tokens from outer level \if tests.
-    \def\IFTEX@let#1#2{%
-      \expandafter\let\csname if#1\expandafter\endcsname
-      \csname if#2\endcsname}
-    % pdftex (including in dvi mode)
-    \begingroup\expandafter\expandafter\expandafter\endgroup
-    \expandafter\ifx\csname pdftexversion\endcsname\relax
-      \IFTEX@let{pdftex}{false}
-    \else
-      \IFTEX@let{pdftex}{true}
-    \fi
-    \IFTEX@let{PDFTeX}{pdftex}
-}
+%% Test whether \DocumentMetadata has been loaded (Thank you Ulrike Fischer)
+\newif\if@asme@pdfmanagement
+\ExplSyntaxOn
+\bool_if:nTF
+  {
+    \bool_lazy_and_p:nn
+      {\cs_if_exist_p:N \pdfmanagement_if_active_p:}
+      { \pdfmanagement_if_active_p: }
+  }
+  {
+    \@asme@pdfmanagementtrue
+  }
+  {
+    \@asme@pdfmanagementfalse
+  }
+\ExplSyntaxOff
 
 
 %%%%%%%%%%%%%% Options for the class %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,8 +115,6 @@
 \SetupKeyvalOptions{
   family=asmejour,
   prefix=asmejour@,
-  family=pdfaopt,
-  prefix=pdafopt@,
   setkeys=\kvsetkeys,
 }
 
@@ -129,20 +123,28 @@
       \PassOptionsToPackage{#1}{mathalfa}%
 }
 
-%% set key [nodefaultsups] to obtain newtx superiors font for footnotes.
-\newboolean{DefaultSups}\setboolean{DefaultSups}{true}
-\define@key{asmejour}{nodefaultsups}[false]{%
-      \setboolean{DefaultSups}{#1}
-}
+%% Option to obtain line numbers [lineno] 
+\DeclareBoolOption{lineno}
 
-%% set barcolor= to a color name defined by xcolor package
-\newcommand\@ColorName{black} % default
-\define@key{asmejour}{barcolor}[Goldenrod3]{%
-      \renewcommand\@ColorName{#1}
-}
+%% Option to balance column height on last page [balance] 
+\DeclareBoolOption{balance}
+
+%% Option to omit lists of figures and tables
+\DeclareBoolOption{nolists}
+
+%% Option for copyright notice if all authors are government employees [govt]
+\DeclareBoolOption{govt}
+
+%% Option for copyright notice if some (not all) authors are government employees [govtsome]
+\DeclareBoolOption{govtsome}
+
+%% Option for government contractor copyright notice [contractor]
+\DeclareBoolOption{contractor}
+
+%% set [barcolor=] to a color name defined by xcolor package
+\DeclareStringOption[black]{barcolor}
 
 %% the key main= passes the choice of main language to babel
-
 \newif\ifaj@mainset\aj@mainsetfalse
 \define@key{asmejour}{main}[english]{%
 	  \PassOptionsToPackage{main=#1,#1}{babel}% added #1 resolves conflicts between certain .ldf files under "main=".
@@ -153,23 +155,6 @@
 	  }%
 }
 
-%% only main= is actually needed, but keeping these three legacy commands for backward compatibility
-\define@key{asmejour}{lang}[english]{%  deprecated option
-	  \PassOptionsToPackage{main=#1,#1}{babel}%
-      \PassOptionsToPackage{pdflang=en}{hyperref}
-	  \aj@mainsettrue%
-	  \ifthenelse{\equal{#1}{english}}{%
-			\relax}{%
-		  	\LogNote{Selecting #1 as the primary language}%
-	  }%
-}
-\define@key{asmejour}{lang-second}[english]{%  deprecated option
-      \PassOptionsToPackage{#1}{babel}%
-}
-\define@key{asmejour}{lang-third}[english]{%  deprecated option
-      \PassOptionsToPackage{#1}{babel}%
-}
-
 %% if main language was not chosen explicitly, default to English
 \ifaj@mainset\relax\else
 	\PassOptionsToPackage{main=english}{babel}%
@@ -178,12 +163,11 @@
 \fi
 
 %% Suppress warnings about unused global options, 2021/12/01
-\DeclareDefaultOption{}% suppress warning about unused mathalfa and barcolor options
+\DeclareDefaultOption{}% suppress warning about unused mathalfa option
 
 \ProcessKeyvalOptions{asmejour}
 
 %% Turn off these keys now that we're done with them
-\def\@KeyFamily{asmejour}
 \NewDocumentCommand\aj@DisableOption{m}{%
   \DisableKeyvalOption[%
     action=ignore,%
@@ -191,56 +175,86 @@
   ]{#1}{\@KeyFamily}%
 }
 \NewDocumentCommand\@DisableKeys{>{\SplitList{;}}m}{\ProcessList{#1}{\aj@DisableOption}}
-\@DisableKeys{nodefaultsups;mathalfa;barcolor;main;lang;lang-second;lang-third}
+
+\def\@KeyFamily{asmejour}
+\@DisableKeys{mathalfa;barcolor;lineno;balance;nolists;govt;govtsome;contractor;main}
 
 
 %%%%%%%   PDF/A Compliance Keys  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% new pdf management in LaTeX, with \DocumentMetaData{..}, is preferred to this approach.
+
 \newif\ifaj@setpdfa\aj@setpdfafalse
 \newif\ifaj@pdfaone\aj@pdfaonefalse
 
-\ifpdftex %% pdf/a compliance has only been configured for pdflatex
-%
-	%%% set key [pdfa] to activate pdf/a compliance (default is pdf/A-3u)
-	\define@key{pdfaopt}{pdf-a}[true]{%
-      \aj@setpdfatrue
-      \PassOptionsToPackage{pdfa,pdfapart=3,pdfaconformance=u}{hyperref}%
-	}
-	%%% to select part 1, 2 or 3 
-	\define@key{pdfaopt}{pdfapart}[3]{%
-      \PassOptionsToPackage{pdfapart=#1}{hyperref}%
-	  \ifthenelse{\equal{#1}{1}}{\aj@pdfaonetrue}{\relax}%
-	}
-	%% to select conformance b or u.  NB: a is not possible with pdfLaTeX, and u is not possible with 1.
-	\define@key{pdfaopt}{pdfaconformance}[u]{%
-      \PassOptionsToPackage{pdfaconformance=#1}{hyperref}%
-	}
-\else
-	\define@key{pdfaopt}{pdf-a}[true]{%
-		\aj@setpdfatrue
+\if@asme@pdfmanagement\else
+    
+    \SetupKeyvalOptions{
+      family=pdfaopt,
+      prefix=pdafopt@,
+      setkeys=\kvsetkeys,
     }
+    
+    \ifpdftex %% configure pdf/a compliance for pdflatex. Revised 2023/10/20
+    %
+    	%%% set key [pdfa] to activate pdf/a compliance (default is pdf/A-3u)
+    	\define@key{pdfaopt}{pdf-a}[true]{%
+          \aj@setpdfatrue
+          \PassOptionsToPackage{pdfa}{hyperref}
+          \AtBeginDocument{\hypersetup{pdfapart=3,pdfaconformance=u}}% note: hyperref takes these options if hyperxmp is loaded
+    	}
+    	%%% to select part 1, 2 or 3 
+    	\define@key{pdfaopt}{pdfapart}[3]{%
+    	  \def\asmejour@tempa{#1}
+          \AtBeginDocument{\hypersetup{pdfapart=\asmejour@tempa}}
+    	  \ifthenelse{\equal{#1}{1}}{\aj@pdfaonetrue}{\relax}%
+    	}
+    	%% to select conformance b or u.  NB: a is not possible with pdfLaTeX, and u is not possible with 1.
+    	\ExplSyntaxOn
+    	\define@key{pdfaopt}{pdfaconformance}[u]{%
+    	  \str_set:Ne \l_tmp_str { \str_uppercase:n {#1} }
+          \AtBeginDocument{\hypersetup{pdfaconformance=\l_tmp_str}}
+    	}
+    	\ExplSyntaxOff
+    \else
+    	\define@key{pdfaopt}{pdf-a}[true]{%
+    	  \aj@setpdfatrue
+        }
+    \fi
+
+    \ProcessKeyvalOptions{pdfaopt}
+    
+    %% Done with these keys, so we can now disable them
+    \def\@KeyFamily{pdfaopt}
+    \@DisableKeys{pdf-a;pdfapart;pdfaconformance}
+
+    %% new pdf management in LaTeX, using \DocumentMetaData{..}, is preferred to this approach.
+    \ifpdftex
+    	\ifaj@pdfaone
+    		\pdfminorversion=4  % for pdf/a-1 need version 4, not 7
+    	\else
+      		\pdfminorversion=7  % this selection is not required
+    	\fi
+    \else
+    	\ifaj@setpdfa\ClassWarningNoLine{asmejour}{pdf-a option requires pdfLaTeX engine. Under LuaLaTeX, use %
+    			\protect\DocumentMetadata{pdfstandard=A-3b} before \protect\documentclass[..]{asmeconf}}\fi%
+    	\ifx\directlua\undefined\else
+        	\directlua{
+                if pdf.getminorversion() \string~= 7 then
+                  if (status.pdf_gone and status.pdf_gone > 0)
+                  or (status.pdf_ptr and status.pdf_ptr > 0) then
+                    tex.error("PDF version cannot be changed anymore")
+                  else
+                    pdf.setminorversion(7)
+                  end
+                end
+        \fi
+    	}% will lose some accented characters this way... better to use fontspec, if the system fonts exist.
+    \fi
 \fi
-
-\ProcessKeyvalOptions{pdfaopt}
-
-%% Done with these keys, so we can now disable them
-\def\@KeyFamily{pdfaopt}
-\@DisableKeys{pdf-a;pdfapart;pdfaconformance}
 
 
 %%%%%%%%%%  Further class options   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%% Option to obtain line numbers [lineno] 
-\newif\ifaj@lineno\aj@linenofalse
-\DeclareOption{lineno}{\aj@linenotrue}
-
-%%% Option to balance column height on last page [balance] 
-\newif\ifaj@balance\aj@balancefalse
-\DeclareOption{balance}{\aj@balancetrue}
-
-%% Option to omit lists of figures and tables
-\newif\ifaj@lists\aj@liststrue
-\DeclareOption{nolists}{\aj@listsfalse}
 
 %% Option to omit ASME footer
 \DeclareOption{nofoot}{%
@@ -251,6 +265,7 @@
      }
    }
 }
+
 %% Option to omit ASME copyright
 \DeclareOption{nocopyright}{%
    \AtBeginDocument{\fancypagestyle{title}{%
@@ -262,26 +277,11 @@
     }   
 }
 
-%% Option for copyright notice if all authors are government employees [govt]
-\newif\ifaj@govt\aj@govtfalse
-\DeclareOption{govt}{\aj@govttrue}
-
-%% Option for copyright notice if some (not all) authors are government employees [govtsome]
-\newif\ifaj@govtsome\aj@govtsomefalse
-\DeclareOption{govtsome}{\aj@govtsometrue}
-
-%% Option for government contractor copyright notice [contractor]
-\newif\ifaj@contractor\aj@contractorfalse
-\DeclareOption{contractor}{\aj@contractortrue}
-
 %% Option for slightly larger small capitals font [largesc], corrected 2021/01/29
 \DeclareOption{largesc}{\PassOptionsToPackage{largesc=true}{newtxtext}}% largesc is a boolean key in newtxtext
 
 %% ASME word separation is greater than newtxtext defaults so change these parameters.
 \PassOptionsToPackage{spacing=0.3em, stretch=0.18em, shrink=0.10em}{newtxtext}% increased shrink from 0.08, 2021/01/30
-
-%% Option not to use latex default superscripts, instead using the newtxtext superiors font [nodefaultsups]
-\ifthenelse{\boolean{DefaultSups}}{\PassOptionsToPackage{defaultsups}{newtxtext}}{\relax}
 
 %% Disable newtxtext osf option, which is not appropriate for documents in this class
 \DeclareOption{osf}{%
@@ -293,19 +293,41 @@
 	\PassOptionsToPackage{hyphenate}{inconsolata}%
 	\LogNote{Allowing hyphenation of typewriter font}%
 }
-%% Option to enforce monospacing of words the typewriter font [mono]
-\DeclareOption{mono}{%
-	\PassOptionsToPackage{mono}{inconsolata}%
+
+\DeclareOption{hyphenate}{%
+	\ifpdftex
+		\PassOptionsToPackage{hyphenate}{inconsolata}% hyphenate is a key via xkeyval in inconsolata
+		\LogNote{Allowing hyphenation of typewriter font}%
+	\else
+		\ClassWarningNoLine{asmejour}{The [hyphenate] option is only supported with pdftex. It will be ignored}%
+	\fi
 }
-%% Option for unslashed zero typewriter font [var0].
+
+%% Option to enforce monospacing of words the typewriter font [mono]
+\def\MonoNotMono{WordSpace={1,1.33,1.67}}% for Inconsolatazi4; default allows word spacing (is not mono)	
+\DeclareOption{mono}{%
+	\ifpdftex
+		\PassOptionsToPackage{mono}{inconsolata}% mono is a key via xkeyval in inconsolata
+	\else
+		\def\MonoNotMono{}%
+	\fi
+}
+
+%% option for unslashed zero typewriter font [var0].
+\def\ssztwo{}% for Inconsolatazi4; default uses slashed zero, +ss02 uses regular zero
 \DeclareOption{var0}{%
-	\PassOptionsToPackage{var0}{inconsolata}% var0 is a key via xkeyval in inconsolata
+	\ifpdftex
+		\PassOptionsToPackage{var0}{inconsolata}% var0 is a key via xkeyval in inconsolata
+	\else
+		\def\ssztwo{+ss02}% stylistic alternate for regular zero
+	\fi
 }
 
 %% Suppress warnings about keys as unused global options
 \DeclareOption*{}
 
 \ProcessOptions \relax
+
 
 %%%%%%%%%%%%  Page size, bibliography, graphics, color, etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -320,8 +342,16 @@
 \renewcommand*{\bibfont}{\footnotesize}
 
 \RequirePackage{graphicx} 
-\ifpdf\def\MyColorOption{fixpdftex}\else\ifluatex\def\MyColorOption{luatex}\else\def\MyColorOption{}\fi\fi
-\RequirePackage[hyperref,\MyColorOption,dvipsnames,svgnames,x11names]{xcolor}
+\RequirePackage[dvipsnames,svgnames,x11names]{xcolor}% remove obsolete options, 2023/10/23
+
+% Allow pre 2021/11/15 formats to see the graphicx alt key without causing an error, in preparation for tagged pdf
+\IfFormatAtLeastTF{2021/11/15}{
+	\relax
+}{ 
+	\AtBeginDocument{
+		\IfPackageLoadedTF{graphicx}{\define@key{Gin}{alt}{}}{\relax}
+	}
+}
 
 % Nice solution from DPC to prevent aux file errors when switching from pdflatex to lualatex
 \ifx\directlua\undefined
@@ -344,45 +374,70 @@
 \renewcommand*{\midrule}{\specialrule{0.5pt}{2pt}{3pt}}
 \renewcommand*{\bottomrule}{\specialrule{0.5pt}{1pt}{\doublerulesep}\specialrule{0.5pt}{0pt}{0pt}}
 
-%%%%%%%%%%%%%  PDF/A related  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ifpdftex
-	\ifaj@pdfaone
-		\pdfminorversion=4  % for pdf/a-1 need version 4, not 7
-	\else
-  		\pdfminorversion=7  % this selection is not required
-	\fi
-	\RequirePackage[T1]{fontenc}
-  	\RequirePackage[utf8]{inputenc}% for backward compatibility with pre-2018 LaTeX distributions
-\else
-	\ifaj@setpdfa\ClassWarningNoLine{asmejour}{pdf-a option requires pdfLaTeX engine. Under LuaLaTeX, use %
-			\protec\RequirePackage{pdfmanagement-testphase} %
-			\protect\DeclareDocumentMetadata{pdfstandard=A-3b} before \protect\documentclass[..]{asmejour}}\fi%
-	\ifluatex
-    	\directlua{
-            if pdf.getminorversion() \string~= 7 then
-              if (status.pdf_gone and status.pdf_gone > 0)
-              or (status.pdf_ptr and status.pdf_ptr > 0) then
-                tex.error("PDF version cannot be changed anymore")
-              else
-                pdf.setminorversion(7)
-              end
-            end
-    \fi
-	}% will lose some accented characters this way... better to use fontspec, if the systems fonts exist.
-\fi
-
 
 %%%%%%%%%%%%%  Font related   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \RequirePackage{mathtools}% loads and extends amsmath
 \RequirePackage[]{babel}
 
-\RequirePackage[]{newtxtext} 
-\RequirePackage[varl,varqu]{inconsolata}% sans typewriter font; restored varl, varqu 2020/08/10 
-\RequirePackage[]{newtxmath}
-
-%% override \textsu if using default superiors
-\ifthenelse{\boolean{DefaultSups}}{\let\textsu\textsuperscript}{\relax}
+\ifpdftex
+    \RequirePackage[T1]{fontenc}
+    \RequirePackage[utf8]{inputenc}% for backward compatibility with pre-2018 LaTeX distributions
+	\RequirePackage[helvratio=0.91]{newtxtext}% add this scaling 2022/06/26
+	\RequirePackage[varl,varqu]{inconsolata}% sans typewriter font; restored varl, varqu 2020/08/10 
+	\RequirePackage[]{newtxmath}
+\else % use lualatex with newtxmath and fontspec for text primary fonts.  Revised 2023/10/21.
+%
+	%% TeX Gyre Heros Condensed is qhvc (regular is qhv). 
+    \RequirePackage[T1]{fontenc} % qhvc is not TU encoded
+    \DeclareFontFamily{T1}{qhvc}{} 
+    \DeclareFontShape{T1}{qhvc}{m}{n}{<-> s*[0.91] ec-qhvcr}{} %% see t1qhvc.fd; 0.9-->0.94 2022/01/15; 0.94-->0.91 2022/06/26
+    \DeclareFontShape{T1}{qhvc}{b}{n}{<-> s*[0.91] ec-qhvcb}{} %% see t1qhvc.fd; 0.9-->0.94 2022/01/15; 0.94-->0.91 2022/06/26
+%
+    \RequirePackage[varqu,varl]{inconsolata}  % typewriter font for math 
+    \renewcommand\rmdefault{ntxtlf}           % roman font for math
+	\DeclareFontFamily{T1}{\sfdefault}{}  % sf for math
+	\DeclareFontShape{T1}{\sfdefault}{m}{n}{<-> s*[0.94] ec-qhvr}{} %% see t1qhv.fd; 0.9-->0.94 2022/01/15
+    \RequirePackage[]{newtxmath}			  % newtxmath still handles mathematics        
+	\RequirePackage[no-math]{fontspec}
+    \defaultfontfeatures{Ligatures=TeX,}
+%
+	\def\FontWarning{For luaLaTeX, you MUST have these OpenType fonts installed as system fonts on your computer: TeX Gyre Termes and TeX Gyre Heros (from \string http://www.gust.org.pl/projects/e-foundry/tex-gyre) and Inconsolatazi4 (\string https://ctan.org/tex-archive/fonts/inconsolata/opentype). If DON'T have these fonts, you will see ERROR messages!}
+%		    
+	\IfFontExistsTF{TeXGyreTermesX}{}{\ClassWarning{asmeconf}{\FontWarning} }
+	\IfFontExistsTF{texgyreheros}{}{  \ClassWarning{asmeconf}{\FontWarning} }
+	\IfFontExistsTF{Inconsolatazi4}{}{\ClassWarning{asmeconf}{\FontWarning} }
+	%
+    \setmainfont{TeXGyreTermesX}[% Presumes these are system fonts! Available at: http://www.gust.org.pl/projects/e-foundry/tex-gyre
+		WordSpace = {1,1.4,1},%% This stretch matches newtxtext a little better. 1.4
+    	Extension = .otf,
+    	UprightFont = *-Regular,
+    	ItalicFont = *-Italic,
+    	BoldFont = *-Bold,
+    	BoldItalicFont = *-BoldItalic,
+		Numbers = Lining,
+		]
+    \setsansfont{texgyreheros}[% Presumes these are system fonts! Available at: http://www.gust.org.pl/projects/e-foundry/tex-gyre
+		WordSpace = {1,1.4,1},
+		Extension = .otf,
+    	UprightFont = *-regular,
+    	ItalicFont = *-italic,
+    	BoldFont = *-bold,
+    	BoldItalicFont = *-bolditalic,
+		Numbers = Lining,
+    	Scale=0.91,% same as for newtx; former value 0.9 too small 2022/01/15
+		]        
+   \setmonofont{Inconsolatazi4}[% This otf font ships with the LaTeX Inconsolata package (it's in TeX Live)
+        \MonoNotMono,
+        Scale=1.05,% rescaled from 1, 22/03/10
+        Extension = .otf,
+        UprightFont = *-Regular,
+        ItalicFont = *-Regular,% has no italic face
+        BoldFont = *-Bold, 
+    	BoldItalicFont = *-Bold,% has no italic face
+        RawFeature = {+ss01,\ssztwo,+ss03},
+        ]
+\fi
   
 \RequirePackage[]{mathalfa}% load optional fonts for Calligraphy, Script, etc. 
 
@@ -406,9 +461,9 @@
 \emergencystretch 3em 
 
 %% TeX Gyre Heros Condensed is qhvc (regular is qhv). 
-\newcommand*{\CondSans}{\selectfont\fontfamily{qhvc}\selectfont} 
+\newcommand*{\CondSans}{\fontencoding{T1}\fontfamily{qhvc}\selectfont}% remove extra \selectfont, 2023/10/21
 \renewcommand\huge{\@setfontsize\huge{14}{14}}        %... for author names only
-\newcommand*{\CondSansBold}{\renewcommand\bfdefault{b}\selectfont\fontfamily{qhvc}\selectfont\bfseries} 
+\newcommand*{\CondSansBold}{\renewcommand\bfdefault{b}\fontencoding{T1}\fontfamily{qhvc}\selectfont\bfseries} 
 \renewcommand\Huge{\@setfontsize\Huge{26.5}{26.5}}    %... for title font only
   
 \RequirePackage{metalogo,hologo}% Access to various LaTeX logos (for use in the documentation)
@@ -417,101 +472,101 @@
 %% It's intended for use in the figure and table captions.
 %% Fonts are from newtxsf package.
 \DeclareMathVersion{sansbold}
-\SetSymbolFont{letters}{sansbold}{OML}{ntxsfmi}{b}{it}
-\SetSymbolFont{lettersA}{sansbold}{U}{ntxsfmia}{b}{it}
-\SetSymbolFont{symbols}{sansbold}{LMS}{ntxsy}{b}{n}
-\SetSymbolFont{largesymbols}{sansbold}{LMX}{ntxexx}{b}{n}%  added 2021/01/26
-\SetSymbolFont{largesymbolsTXA}{sansbold}{U}{ntxexa}{b}{n}% added 2021/01/26
-\SetSymbolFont{operators}{sansbold}{\encodingdefault}{\sfdefault}{\bfdefault}{n}
-\SetMathAlphabet{\mathsf}{sansbold}{\encodingdefault}{\sfdefault}{b}{n}% \mathsf is upright
+    \SetSymbolFont{letters}{sansbold}{OML}{ntxsfmi}{b}{it}
+    \SetSymbolFont{lettersA}{sansbold}{U}{ntxsfmia}{b}{it}
+    \SetSymbolFont{symbols}{sansbold}{LMS}{ntxsy}{b}{n}
+    \SetSymbolFont{largesymbols}{sansbold}{LMX}{ntxexx}{b}{n}%  added 2021/01/26
+    \SetSymbolFont{largesymbolsTXA}{sansbold}{U}{ntxexa}{b}{n}% added 2021/01/26
+    \SetSymbolFont{operators}{sansbold}{\encodingdefault}{\sfdefault}{\bfdefault}{n}
+    \SetMathAlphabet{\mathsf}{sansbold}{\encodingdefault}{\sfdefault}{b}{n}% \mathsf is upright
 
 %% These lines are to provide math accents for the sans and sansbold math versions.  
 %% The accents from ntxsfmi work normally with regular times fonts. Added 2021/01/27
 \DeclareSymbolFont{lettersAB}{U}{ntxsfmia}{m}{it}
-\SetSymbolFont{lettersAB}{normal}{U}{ntxsfmia}{m}{it}
-\SetSymbolFont{lettersAB}{bold}{U}{ntxsfmia}{b}{it}
-\SetSymbolFont{lettersAB}{sansbold}{U}{ntxsfmia}{b}{it}
-\DeclareFontSubstitution{U}{ntxsfmia}{m}{it}
-%
-\DeclareMathAccent{\grave}{\mathord}{lettersAB}{254}
-\DeclareMathAccent{\acute}{\mathord}{lettersAB}{255}
-\DeclareMathAccent{\check}{\mathord}{lettersAB}{186}
-\DeclareMathAccent{\breve}{\mathord}{lettersAB}{187}
-\DeclareMathAccent{\bar}{\mathord}{lettersAB}{221}
-\DeclareMathAccent{\mathring}{\mathord}{lettersAB}{222}
-\DeclareMathAccent{\hat}{\mathord}{lettersAB}{223}
-\DeclareMathAccent{\dot}{\mathord}{lettersAB}{224}
-\DeclareMathAccent{\tilde}{\mathord}{lettersAB}{219}
+    \SetSymbolFont{lettersAB}{normal}{U}{ntxsfmia}{m}{it}
+    \SetSymbolFont{lettersAB}{bold}{U}{ntxsfmia}{b}{it}
+    \SetSymbolFont{lettersAB}{sansbold}{U}{ntxsfmia}{b}{it}
+    \DeclareFontSubstitution{U}{ntxsfmia}{m}{it}
+
+    \DeclareMathAccent{\grave}{\mathord}{lettersAB}{254}
+    \DeclareMathAccent{\acute}{\mathord}{lettersAB}{255}
+    \DeclareMathAccent{\check}{\mathord}{lettersAB}{186}
+    \DeclareMathAccent{\breve}{\mathord}{lettersAB}{187}
+    \DeclareMathAccent{\bar}{\mathord}{lettersAB}{221}
+    \DeclareMathAccent{\mathring}{\mathord}{lettersAB}{222}
+    \DeclareMathAccent{\hat}{\mathord}{lettersAB}{223}
+    \DeclareMathAccent{\dot}{\mathord}{lettersAB}{224}
+    \DeclareMathAccent{\tilde}{\mathord}{lettersAB}{219}
 
 %% Provide sans-serif *upright* Greek letters, following a suggestion by Michael Sharpe.  2021/12/22
 %% Following Sharpe's newtxsf implementation of the STIX fonts, under the LaTeX Project Public License.
 %% (Note that \mathversion{sansbold} provides sans-serif *italic* Greek letters.) 
 
-\DeclareMathSymbol{\sfGamma}{\mathalpha}{lettersAB}{0}% adjust to avoid overwriting newtxmath commands,
-\DeclareMathSymbol{\sfDelta}{\mathalpha}{lettersAB}{1}
-\DeclareMathSymbol{\sfTheta}{\mathalpha}{lettersAB}{2}
-\DeclareMathSymbol{\sfLambda}{\mathalpha}{lettersAB}{3}
-\DeclareMathSymbol{\sfXi}{\mathalpha}{lettersAB}{4}
-\DeclareMathSymbol{\sfPi}{\mathalpha}{lettersAB}{5}
-
-\DeclareMathSymbol{\sfSigma}{\mathalpha}{lettersAB}{6}
-\DeclareMathSymbol{\sfUpsilon}{\mathalpha}{lettersAB}{7}
-\DeclareMathSymbol{\sfPhi}{\mathalpha}{lettersAB}{8}
-\DeclareMathSymbol{\sfPsi}{\mathalpha}{lettersAB}{9}
-\DeclareMathSymbol{\sfOmega}{\mathalpha}{lettersAB}{10}
-
-\DeclareMathSymbol{\sfalpha}{\mathalpha}{lettersAB}{11}
-\DeclareMathSymbol{\sfbeta}{\mathalpha}{lettersAB}{12}
-\DeclareMathSymbol{\sfgamma}{\mathalpha}{lettersAB}{13}
-\DeclareMathSymbol{\sfdelta}{\mathalpha}{lettersAB}{14}
-\DeclareMathSymbol{\sfepsilon}{\mathalpha}{lettersAB}{15}
-
-\DeclareMathSymbol{\sfzeta}{\mathalpha}{lettersAB}{16}
-\DeclareMathSymbol{\sfeta}{\mathalpha}{lettersAB}{17}
-\DeclareMathSymbol{\sftheta}{\mathalpha}{lettersAB}{18}
-\DeclareMathSymbol{\sfiota}{\mathalpha}{lettersAB}{19}
-\DeclareMathSymbol{\sfkappa}{\mathalpha}{lettersAB}{20}
-
-\DeclareMathSymbol{\sflambda}{\mathalpha}{lettersAB}{21}
-\DeclareMathSymbol{\sfmu}{\mathalpha}{lettersAB}{22}
-\DeclareMathSymbol{\sfnu}{\mathalpha}{lettersAB}{23}
-\DeclareMathSymbol{\sfxi}{\mathalpha}{lettersAB}{24}
-\DeclareMathSymbol{\sfpi}{\mathalpha}{lettersAB}{25}
-
-\DeclareMathSymbol{\sfrho}{\mathalpha}{lettersAB}{26}
-\DeclareMathSymbol{\sfsigma}{\mathalpha}{lettersAB}{27}
-\DeclareMathSymbol{\sftau}{\mathalpha}{lettersAB}{28}
-\DeclareMathSymbol{\sfupsilon}{\mathalpha}{lettersAB}{29}
-\DeclareMathSymbol{\sfphi}{\mathalpha}{lettersAB}{30}
-
-\DeclareMathSymbol{\sfchi}{\mathalpha}{lettersAB}{31}
-\DeclareMathSymbol{\sfpsi}{\mathalpha}{lettersAB}{32}
-\DeclareMathSymbol{\sfomega}{\mathalpha}{lettersAB}{33}
-\DeclareMathSymbol{\sfvarepsilon}{\mathalpha}{lettersAB}{34}
-\DeclareMathSymbol{\sfvartheta}{\mathalpha}{lettersAB}{35}
-
-\DeclareMathSymbol{\sfvarpi}{\mathord}{lettersAB}{36}
-\DeclareMathSymbol{\sfvarrho}{\mathord}{lettersAB}{37}
-\DeclareMathSymbol{\sfvarsigma}{\mathord}{lettersAB}{38}
-\DeclareMathSymbol{\sfvarphi}{\mathord}{lettersAB}{39}
-\DeclareMathSymbol{\sfitvarkappa}{\mathalpha}{lettersAB}{40}
-\DeclareMathSymbol{\sfvarkappa}{\mathalpha}{lettersAB}{40}
-\DeclareMathSymbol{\sfitnabla}{\mathalpha}{lettersAB}{42}
-\DeclareMathSymbol{\sfnabla}{\mathalpha}{lettersAB}{43}
-\DeclareMathSymbol{\sfhslash}{\mathalpha}{lettersAB}{52}% this is not upright
-\DeclareMathSymbol{\sfhbar}{\mathalpha}{lettersAB}{53}%   this is not upright
+    \DeclareMathSymbol{\sfGamma}{\mathalpha}{lettersAB}{0}% adjust to avoid overwriting newtxmath commands,
+    \DeclareMathSymbol{\sfDelta}{\mathalpha}{lettersAB}{1}
+    \DeclareMathSymbol{\sfTheta}{\mathalpha}{lettersAB}{2}
+    \DeclareMathSymbol{\sfLambda}{\mathalpha}{lettersAB}{3}
+    \DeclareMathSymbol{\sfXi}{\mathalpha}{lettersAB}{4}
+    \DeclareMathSymbol{\sfPi}{\mathalpha}{lettersAB}{5}
+    
+    \DeclareMathSymbol{\sfSigma}{\mathalpha}{lettersAB}{6}
+    \DeclareMathSymbol{\sfUpsilon}{\mathalpha}{lettersAB}{7}
+    \DeclareMathSymbol{\sfPhi}{\mathalpha}{lettersAB}{8}
+    \DeclareMathSymbol{\sfPsi}{\mathalpha}{lettersAB}{9}
+    \DeclareMathSymbol{\sfOmega}{\mathalpha}{lettersAB}{10}
+    
+    \DeclareMathSymbol{\sfalpha}{\mathalpha}{lettersAB}{11}
+    \DeclareMathSymbol{\sfbeta}{\mathalpha}{lettersAB}{12}
+    \DeclareMathSymbol{\sfgamma}{\mathalpha}{lettersAB}{13}
+    \DeclareMathSymbol{\sfdelta}{\mathalpha}{lettersAB}{14}
+    \DeclareMathSymbol{\sfepsilon}{\mathalpha}{lettersAB}{15}
+    
+    \DeclareMathSymbol{\sfzeta}{\mathalpha}{lettersAB}{16}
+    \DeclareMathSymbol{\sfeta}{\mathalpha}{lettersAB}{17}
+    \DeclareMathSymbol{\sftheta}{\mathalpha}{lettersAB}{18}
+    \DeclareMathSymbol{\sfiota}{\mathalpha}{lettersAB}{19}
+    \DeclareMathSymbol{\sfkappa}{\mathalpha}{lettersAB}{20}
+    
+    \DeclareMathSymbol{\sflambda}{\mathalpha}{lettersAB}{21}
+    \DeclareMathSymbol{\sfmu}{\mathalpha}{lettersAB}{22}
+    \DeclareMathSymbol{\sfnu}{\mathalpha}{lettersAB}{23}
+    \DeclareMathSymbol{\sfxi}{\mathalpha}{lettersAB}{24}
+    \DeclareMathSymbol{\sfpi}{\mathalpha}{lettersAB}{25}
+    
+    \DeclareMathSymbol{\sfrho}{\mathalpha}{lettersAB}{26}
+    \DeclareMathSymbol{\sfsigma}{\mathalpha}{lettersAB}{27}
+    \DeclareMathSymbol{\sftau}{\mathalpha}{lettersAB}{28}
+    \DeclareMathSymbol{\sfupsilon}{\mathalpha}{lettersAB}{29}
+    \DeclareMathSymbol{\sfphi}{\mathalpha}{lettersAB}{30}
+    
+    \DeclareMathSymbol{\sfchi}{\mathalpha}{lettersAB}{31}
+    \DeclareMathSymbol{\sfpsi}{\mathalpha}{lettersAB}{32}
+    \DeclareMathSymbol{\sfomega}{\mathalpha}{lettersAB}{33}
+    \DeclareMathSymbol{\sfvarepsilon}{\mathalpha}{lettersAB}{34}
+    \DeclareMathSymbol{\sfvartheta}{\mathalpha}{lettersAB}{35}
+    
+    \DeclareMathSymbol{\sfvarpi}{\mathord}{lettersAB}{36}
+    \DeclareMathSymbol{\sfvarrho}{\mathord}{lettersAB}{37}
+    \DeclareMathSymbol{\sfvarsigma}{\mathord}{lettersAB}{38}
+    \DeclareMathSymbol{\sfvarphi}{\mathord}{lettersAB}{39}
+    \DeclareMathSymbol{\sfitvarkappa}{\mathalpha}{lettersAB}{40}
+    \DeclareMathSymbol{\sfvarkappa}{\mathalpha}{lettersAB}{40}
+    \DeclareMathSymbol{\sfitnabla}{\mathalpha}{lettersAB}{42}
+    \DeclareMathSymbol{\sfnabla}{\mathalpha}{lettersAB}{43}
+    \DeclareMathSymbol{\sfhslash}{\mathalpha}{lettersAB}{52}% this is not upright
+    \DeclareMathSymbol{\sfhbar}{\mathalpha}{lettersAB}{53}%   this is not upright
 
 %%% sans math version, potential value with PGFPlots, and provisionally called in subfigure captions.
 %%% this is experimental, still needs stress testing. 2021/01/30
 \DeclareMathVersion{sans}
-\SetSymbolFont{letters}{sans}{OML}{ntxsfmi}{m}{it}
-\SetSymbolFont{lettersA}{sans}{U}{ntxsfmia}{m}{it}
-\SetSymbolFont{lettersAB}{sans}{U}{ntxsfmia}{m}{it}
-\SetSymbolFont{symbols}{sans}{LMS}{ntxsy}{m}{n}
-\SetSymbolFont{largesymbols}{sans}{LMX}{ntxexx}{m}{n}
-\SetSymbolFont{largesymbolsTXA}{sans}{U}{ntxexa}{m}{n}
-\SetSymbolFont{operators}{sans}{\encodingdefault}{\sfdefault}{m}{n}
-\SetMathAlphabet{\mathsf}{sans}{\encodingdefault}{\sfdefault}{m}{n}
+    \SetSymbolFont{letters}{sans}{OML}{ntxsfmi}{m}{it}
+    \SetSymbolFont{lettersA}{sans}{U}{ntxsfmia}{m}{it}
+    \SetSymbolFont{lettersAB}{sans}{U}{ntxsfmia}{m}{it}
+    \SetSymbolFont{symbols}{sans}{LMS}{ntxsy}{m}{n}
+    \SetSymbolFont{largesymbols}{sans}{LMX}{ntxexx}{m}{n}
+    \SetSymbolFont{largesymbolsTXA}{sans}{U}{ntxexa}{m}{n}
+    \SetSymbolFont{operators}{sans}{\encodingdefault}{\sfdefault}{m}{n}
+    \SetMathAlphabet{\mathsf}{sans}{\encodingdefault}{\sfdefault}{m}{n}
 
 
 %%%%%%%%%%%%%%%%%  Some adjustments to math layout %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -527,40 +582,50 @@
 
 %%%%%%%%%%%%%%%%%  Equation and Line Numbering  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\RequirePackage{etoolbox}% patching amsmath
+
 %% ASME puts equation tags in blue
 \patchcmd{\tagform@}{(\ignorespaces#1\unskip\@@italiccorr)}{\color{blue}(\ignorespaces#1\unskip\@@italiccorr)}{}{}
 
 %% Ensure that the current font is used for equation tags, not \normalfont as set by amsmath
 \def\maketag@@@#1{\hbox{\m@th#1}}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Italicize alph part of subequation numbers. Revised 2023/10/20
+\patchcmd{\subequations}{\theparentequation\alph{equation}}{\theparentequation\itshape\alph{equation}}{}{}
 
-\ifaj@lineno
+
+%%%%% lineno related %%%%
+
+\ifasmejour@lineno
     \RequirePackage[switch,mathlines]{lineno}%
     \renewcommand{\linenumberfont}{\normalfont\footnotesize\color{red}}% 
     \AtBeginDocument{\linenumbers}%
-    \ifaj@balance
+    \ifasmejour@balance
 		\ClassWarningNoLine{asmejour}{Package lineno loaded, so final column balancing will be disabled}%
 	\fi
-    %%% Allow line numbering in AMS math environments.
-    %%% postdisplaypenalty adjusted to avoid extra line number at end, see discussion here: https://tex.stackexchange.com/a/461192/ 
-    %%% multline has some problem that puts an extra line number above it.
-    %%% Requires xparse and etoolbox
-    \NewDocumentCommand{\aj@losepostpenalty}{}{\patchcmd{\linenomathWithnumbers}{\advance\postdisplaypenalty\linenopenalty}{}{}{}}%
-%    
-    \NewDocumentCommand{\aj@FixAMSMath}{m}{%
-    	\AtBeginEnvironment{#1}{\aj@losepostpenalty\linenomath}%
-    	\AtEndEnvironment{#1}{\endlinenomath}%
-    	\AtBeginEnvironment{#1*}{\aj@losepostpenalty\linenomath}%
-    	\AtEndEnvironment{#1*}{\endlinenomath}%
-    }%
-%
-    \NewDocumentCommand{\aj@FixAll}{>{\SplitList{;}}m}{\ProcessList{#1}{\aj@FixAMSMath}}%
-    \aj@FixAll{align;alignat;gather;flalign;multline}%
+	%%% Patch to allow line numbering in AMS math environments.
+	%%% This patch is for lineno versions earlier than v5.2 [2023/05/19]. As of mid-2023, the lineno package
+	%%% 	has been corrected to account for the AMS math environments.  Retaining temporarily for backward compatibility.
+	%%% postdisplaypenalty adjusted to avoid extra line number at end, see: https://tex.stackexchange.com/a/461192/ 
+	%%% multline has some additional problem that puts an extra line number above it.
+	\IfPackageAtLeastTF{lineno}{2023/05/19}{\relax}{
+    	\NewDocumentCommand{\ac@losepostpenalty}{}{\patchcmd{\linenomathWithnumbers}{\advance\postdisplaypenalty\linenopenalty}{}{}{}}
+    	%
+        \NewDocumentCommand{\ac@FixAMSMath}{m}{%
+        	\AtBeginEnvironment{#1}{\ac@losepostpenalty\linenomath}%
+        	\AtEndEnvironment{#1}{\endlinenomath}%
+        	\AtBeginEnvironment{#1*}{\ac@losepostpenalty\linenomath}%
+        	\AtEndEnvironment{#1*}{\endlinenomath}%
+        }
+    	%
+    	\NewDocumentCommand{\ac@FixAll}{>{\SplitList{;}}m}{\ProcessList{#1}{\ac@FixAMSMath}}
+    	%
+    	\ac@FixAll{align;alignat;gather;flalign;multline}
+	}
 %
 \else
     \ProvideDocumentEnvironment{linenomath}{}{}{}%
-    \ifaj@balance                %    balancing through flushend can produce weird errors
+    \ifasmejour@balance                %    balancing through flushend can produce weird errors
     	\RequirePackage{flushend}%    flushend package is NOT compatible with lineno
     	\AtEndDocument{\flushcolsend}%
 		\LogNote{Calling flushend package to balance column height on last page}%
@@ -571,6 +636,7 @@
 \providecommand{\@LN}[2]{\relax}
 
 %% ASME page proofs seem to align the number at top of the line, rather than bottom as done here.
+
 
 %%%%%%%%%%%%%%%%%  Footer Set Up  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -650,16 +716,12 @@
 
 
 %% include a comma for sequential footnotes
-\newcommand\nextToken\relax
+\ExplSyntaxOn
+	\cs_new:Npn   \__asmejour_NoteComma:n { \peek_meaning:NT \footnote { \textsu{\mdseries,} } }
+	\cs_new_eq:NN \__savefootnote \footnote
+	\cs_gset_protected:Npn \footnote #1    { \__savefootnote{#1}\__asmejour_NoteComma:n } 
+\ExplSyntaxOff
 
-\let\oldfootnote\footnote
-\renewcommand\footnote[1]{%
-    \oldfootnote{#1}\futurelet\nextToken\isOtherfnote}
-    
-\newcommand\isOtherfnote{%
-    \ifx\footnote\nextToken\textsu{\mdseries,}%
-    \fi%
-}
 
 %%%%%%%%%  Caption Related  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -729,22 +791,7 @@
 
 %%%%%%%%%%%%%%%%%  Hyperref  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newif\if@asme@pdfmanagement% Thanks to Ulrike Fischer
-\ExplSyntaxOn
-\bool_if:nTF
-  {
-    \bool_lazy_and_p:nn
-      {\cs_if_exist_p:N \pdfmanagement_if_active_p:}
-      { \pdfmanagement_if_active_p: }
-  }
-  {
-    \@asme@pdfmanagementtrue
-  }
-  {
-    \@asme@pdfmanagementfalse
-  }
-\ExplSyntaxOff
-
+%% new pdf management in LaTeX, with \DocumentMetaData{..}, is preferred to this approach.
 \ifpdftex
     %%% to assist with unicode glyph mapping, following M. Sharpe's recommendation in the newtx documentation.
     \IfFormatAtLeastTF{2020/10/01}{\relax}{%
@@ -777,12 +824,11 @@
     \fi
 \fi
 
-\RequirePackage{hyperxmp} %% to fix transfer of metadata to Acrobat pdf 
+%%%
 
 \RequirePackage[psdextra]{hyperref} % recent kernel transition suggests providing most hyperref options via \hypersetup, 
 									% but setting psdextra here (for additional math support in bookmarks) 2021/12/23
 \hypersetup{%
-    unicode,        % Unicode encoded PDF strings
 	pdfborder={0 0 0},% 
 	bookmarksnumbered=true,%
 	bookmarksopen=true,%
@@ -806,6 +852,25 @@
 
 \providecommand\hrefurl[2]{\href{#1}{#2}}% to address certain issues around URL recognition with new pdf management code, 2021/12/22
 %% This alias is also incorporated into asmejour.bst
+
+\if@asme@pdfmanagement
+	\ClassInfo{asmejour}{pdfmanagement is defined. Class file will not load hyperxmp}
+\else
+	\RequirePackage{hyperxmp} %% to fix transfer of metadata to Acrobat pdf 
+	% Patch bug in hyperxmp, unless a more recent version is used.
+        \@ifpackagelater{hyperxmp}{2022/10/15}{% v5.11 or later
+            \relax
+    %        \ClassInfo{asmeconf}{hyperxmp v5.11 or later is in use}
+    	}{%
+		\ifx\undefined\hyxmp@no@bad@parts\relax\else
+            \newcount\hypxmp@tempcnt
+            \define@key{Hyp}{pdfapart}{%
+              \afterassignment\hyxmp@no@bad@parts\hypxmp@tempcnt=0#1\relax
+              \hyxmp@pdfstringdef\@pdfapart{\the\hypxmp@tempcnt}%
+            }
+        \fi
+    }
+\fi
 
 %%%%%% Adjustments to accommodate hyperref bookmarks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -835,28 +900,9 @@
 }
 
 %% Let's make sure footnotes in section headings don't break pdf bookmarks.
-\robustify{\footnote}
+%\robustify{\footnote} % redefined footnote above is protected, 2023/10/21
 \pdfstringdefDisableCommands{%
     \def\footnote#1{}%
-}
-
-%%% Create an optional argument for unnumbered sections and set pdf bookmark (thru \addcontentsline).
-%%% The optional argument will manually set the pdf bookmark for that section; can be used to avoid hyperref 
-%%%     errors when macros are in section titles.
-%%% There should not be errors for $$, \cite, \ref, \label, \footnote, or \bm with current construction.
-\let\svsection\section
-\RenewDocumentCommand{\section}{s o m}{%
-	    \IfBooleanTF {#1}
-		{\svsection*{#3}\phantomsection%
-					{\IfNoValueTF {#2}
-					{\addcontentsline{toc}{section}{#3}}
-					{\addcontentsline{toc}{section}{#2}}% remove trailing space 2020/02/28
-					}%
-		}
-		{\IfNoValueTF {#2}
-			{\svsection{#3}}
-			{\svsection[#2]{#3}}%
-		}%
 }
 
 
@@ -878,26 +924,9 @@
 \newlength\nomenwidth
 \newlength\savitemsep
 
-%% ==> xparse "g" argument used in this version of \entry is deprecated; so have phased out this version, 2021/12/22
-%% If the second argument of \entry is omitted, a bold section heading is produced, e.g. \entry{Greek Letters}
-%\NewDocumentCommand{\entry}{m g}{%
-%	\IfNoValueTF{#2}{%
-%         \itemsep12\p@ plus 4\p@ minus 4\p@% \bigskip
-%         \goodbreak\item[\bfseries#1\hfill]\itemsep3\p@ plus 1\p@ minus 1\p@\@itempenalty=1000%
-%			 }{%
-%         \item[\hfill#1${} = {}$]#2%
-%		 \@itempenalty=-\@lowpenalty%
-%         \setlength\itemsep\savitemsep%
-%         \settowidth\@widest{#1${} = {}$}%
-%         \ifdim\@widest>\widest \global\setlength\widest\@widest\fi%
-%     }
-%}
-
 \NewDocumentCommand{\entry}{m m}{%
-\ifblank{#2}{%
-		\ClassWarningNoLine{asmejour}{The command \protect\entry should have two arguments. For subheadings, \protect\EntryHeading is preferred}
-        \itemsep12\p@ plus 4\p@ minus 4\p@% \bigskip
-        \goodbreak\item[\bfseries#1\hfill]\itemsep3\p@ plus 1\p@ minus 1\p@\@itempenalty=1000%
+	\ifblank{#2}{%
+		\ClassError{asmejour}{The command \protect\entry should have two arguments. For subheadings, use \protect\EntryHeading}{It appears that you gave only one argument for \protect\entry.  You need to include a second argument.}
 	}{%
 		\item[\hfill#1${} = {}$]#2%
 		\@itempenalty=-\@lowpenalty%
@@ -910,7 +939,7 @@
 %% A separate command command for nomenclature subheadings
 \NewDocumentCommand\EntryHeading{m}{%
              \itemsep12\p@ plus 4\p@ minus 4\p@% \bigskip
-             \goodbreak\item[\bfseries#1\hfill]\itemsep3\p@ plus 1\p@ minus 1\p@\@itempenalty=1000%
+             \goodbreak\item[\bfseries#1\hfill]\mbox{}\itemsep3\p@ plus 1\p@ minus 1\p@\@itempenalty=1000% add \mbox for tagged pdf, 2023/10/20
 }
 
 \RequirePackage{totcount}
@@ -943,7 +972,9 @@
 %%%%%%%%%%%%%%%%  List of figures and list of tables  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% ASME requires these lists for production. 
-\ifaj@lists
+\ifasmejour@nolists
+	\LogNote{Omitting lists of figures and tables}%
+\else
     \AtEndDocument{%
 	    \clearpage
 		\twocolumn[%
@@ -953,9 +984,8 @@
 		\end{@twocolumnfalse} 
 		]%
 	}%
-\else
-	\LogNote{Omitting lists of figures and tables}%
 \fi
+
 
 %%%%%%%%%%%%%%%%  Author/Title/Abstract block  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1015,7 +1045,12 @@
 
 \NewDocumentCommand\@SetAbstract{+m}{% add + to enable blank lines, etc. 2021/01/31
    \SetVerticalCoffin{\Abstract}{114mm}{%
-      \noindent\itshape%
+       \ifasmejour@lineno
+       	 \rightlinenumbers*
+	 	 \renewcommand*{\thelinenumber}{\roman{linenumber}}
+		 \internallinenumbers
+	   \fi
+       \noindent\itshape%
       #1
       \@keywords\par% 
       \vspace*{4mm}% <== at bottom of abstract to extend rule
@@ -1030,7 +1065,7 @@
 	\else
 	   \addtolength{\rulecofheight}{7.0mm} 
 	\fi
-    \SetHorizontalCoffin \ruleblock {\color{\@ColorName}\rule{2.1mm}{\rulecofheight}}
+    \SetHorizontalCoffin \ruleblock {\color{\asmejour@barcolor}\rule{2.1mm}{\rulecofheight}}
     \JoinCoffins\firstrowauthorblock[vc,r]\ruleblock[vc,l](\coffinsep,0pt)
     \JoinCoffins\firstrowauthorblock[vc,r]\Title[vc,l](\coffinsep,0pt)
     \centerline{\TypesetCoffin\firstrowauthorblock} %% in this instance, \centerline is better than \centering
@@ -1043,13 +1078,9 @@
 %% Flag for corresponding author (only one expected, although this code supports more than one)
 \newif\ifaj@CA\aj@CAfalse
 
-\newcommand{\CAemail}[1]{\gdef\@CAemail{#1}}% legacy code, drop eventually
-
 %% ASME prefers email to be in address block, not CA footnote; removed option 2021/01/30
 \NewDocumentCommand{\CorrespondingAuthor}{}{%
 	\global\aj@CAtrue%
-    \gdef\@CAsep{\relax}% legacy code, drop eventually
-	\gdef\@CAemail{\relax}% legacy code, drop eventually
 	\def\@makefnmark{\hbox{\@textsuperscript{\sffamily\@thefnmark}}}%
 	\footnotemark%
 	\addtocounter{footnote}{-1}% in case of more than one CA
@@ -1071,14 +1102,14 @@
     ]
     \ifaj@CA 
     	\addtocounter{footnote}{1}
-    	\footnotetext{\CAwords\@CAsep \@CAemail}% includes legacy code, will remove \@CA commands eventually
+    	\footnotetext{\CAwords}
     \fi
-    \ifaj@Date\revfootnote{\@Date}\else\relax\fi
-    \ifaj@contractor\revfootnote{The United States Government retains, and by accepting the article for publication, the publisher acknowledges that the United States Government retains, a non-exclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for United States Government purposes.}%
+    \DateFootnote
+    \ifasmejour@contractor\revfootnote{The United States Government retains, and by accepting the article for publication, the publisher acknowledges that the United States Government retains, a non-exclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for United States Government purposes.}%
     \fi
-    \ifaj@govt\revfootnote{This material is declared a work of the U.S. Government and is not subject to copyright protection in the United States. Approved for public release; distribution is unlimited.}%
+    \ifasmejour@govt\revfootnote{This material is declared a work of the U.S. Government and is not subject to copyright protection in the United States. Approved for public release; distribution is unlimited.}%
     \fi
-    \ifaj@govtsome\revfootnote{This work was authored in part by a U.\ S.\ Government employee in the scope of his/her employment. ASME disclaims all interest in the U.\ S.\ Government's contribution.}%
+    \ifasmejour@govtsome\revfootnote{This work was authored in part by a U.\ S.\ Government employee in the scope of his/her employment. ASME disclaims all interest in the U.\ S.\ Government's contribution.}%
     \fi
 }
 
@@ -1093,14 +1124,21 @@
 %% Thanks to DPC for the suggestion of \gdef\tmp{...
 
 %% Put date as an unnumbered footnote at bottom of first column
-\newif\ifaj@Date\aj@Datetrue% If true, print a date.
-
 \ExplSyntaxOn
-\RenewDocumentCommand{\date}{m}
-  {%
-    \tl_if_empty:nTF {#1}{\global\aj@Datefalse}{\gdef\@Date{#1}}%
-  }
-\providecommand\@Date{\today}
+	\bool_new:N \g__asmejour_date_bool
+    \tl_new:N   \g__asmejour_date_tl 
+    \tl_new:N   \DateFootnote
+	\bool_gset_true:N \g__asmejour_date_bool
+    \tl_gset:Nn       \g__asmejour_date_tl { \today }
+    \tl_gset:Nn \DateFootnote { 
+    		\if_bool:N \g__asmejour_date_bool \revfootnote{\g__asmejour_date_tl} \else: \fi: 
+	}
+    \RenewDocumentCommand{\date}{m}
+    {
+    	\tl_if_empty:nTF {#1}
+			{ \bool_gset_false:N \g__asmejour_date_bool }
+        	{ \tl_gset:Nn \g__asmejour_date_tl { #1 } }
+    }
 \ExplSyntaxOff
 
 \RenewDocumentCommand{\thanks}{m}{\relax}%% disabling this standard command, as it is inconsistent with this format
