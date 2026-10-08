@@ -46,16 +46,16 @@ All verification studies introduce controlled variations in geometry, temporal r
 \begin{table*}[htbp]
     \centering
     \caption{Geometric quantities for the code and solution verification studies. All dimensions are reported in mm. The pipe diameter is 4.54 mm, and the case thickness is 0.3 mm. \(L_{\mathrm{in}}\), \(L_{\mathrm{case}}\), and \(L_{\mathrm{out}}\) denote the pipe inlet, pipe case, and pipe outlet lengths, respectively, and \(L\) denotes the total pipe length.}
-    \begin{tabular}{p{2.4cm}p{1.25cm}p{1.2cm}p{1.5cm}p{3.5cm}p{3.6cm}}
+    \begin{tabular}{P{2.4cm}P{1.8cm}P{1.4cm}P{2.4cm}P{3.6cm}P{3.6cm}}
         \toprule
         Study & Verification & Regime & Geometry & Physical configuration & QoI \\
         \midrule        
         Hydrodynamic
         & Code
         & Steady
-        & $L_{\mathrm{in}}=45$
-          $L_{\mathrm{case}}=45$ 
-          $L_{\mathrm{out}}=0$
+        & $L_{\mathrm{in}}=45$\newline
+          $L_{\mathrm{case}}=45$\newline
+          $L_{\mathrm{out}}=0$\newline
           $L=90$ 
         & Fluid only; 
           $U=0.5$ m/s;
@@ -67,9 +67,9 @@ All verification studies introduce controlled variations in geometry, temporal r
         Radial conduction
         & Code
         & Steady
-        & $L_{\mathrm{in}}=11.375$
-          $L_{\mathrm{case}}=45$ 
-          $L_{\mathrm{out}}=0$
+        & $L_{\mathrm{in}}=11.375$\newline
+          $L_{\mathrm{case}}=45$\newline
+          $L_{\mathrm{out}}=0$\newline
           $L=56.375$
         & Solid conduction only; Uniform heat source $S_E=3.5\times10^{8}$~W/m$^3$ &  
           $QoI_{\mathrm{cond}}$: Radial temperature solid \\
@@ -78,9 +78,9 @@ All verification studies introduce controlled variations in geometry, temporal r
         Thermal diffusion
         & Code
         & Transient
-        & $L_{\mathrm{in}}=11.375$
-          $L_{\mathrm{case}}=45$
-          $L_{\mathrm{out}}=0$
+        & $L_{\mathrm{in}}=11.375$\newline
+          $L_{\mathrm{case}}=45$\newline
+          $L_{\mathrm{out}}=0$\newline
           $L=56.375$
         & Transient thermal diffusion;
           Fluid $T_0=20^\circ$C;
@@ -92,9 +92,9 @@ All verification studies introduce controlled variations in geometry, temporal r
         Coupled pipe
         & Solution
         & Steady
-        & $L_{\mathrm{in}}=45$
-          $L_{\mathrm{case}}=45$
-          $L_{\mathrm{out}}=0$
+        & $L_{\mathrm{in}}=45$\newline
+          $L_{\mathrm{case}}=45$\newline
+          $L_{\mathrm{out}}=0$\newline
           $L=90$
         & Steady conjugate heat transfer;
           $U_{\mathrm{in}}=0.5$ m/s;
@@ -107,9 +107,9 @@ All verification studies introduce controlled variations in geometry, temporal r
         Simplified EDDS
         & Solution
         & Transient
-        & $L_{\mathrm{in}}=2.021$
-          $L_{\mathrm{case}}=7.2$
-          $L_{\mathrm{out}}=42.509$
+        & $L_{\mathrm{in}}=2.021$\newline
+          $L_{\mathrm{case}}=7.2$\newline
+          $L_{\mathrm{out}}=42.509$\newline
           $L=51.730$
         & Transient conjugate heat transfer;
           $U_{\mathrm{in}}=0.5$ m/s;
@@ -174,8 +174,8 @@ Thermophysical properties used for air (fluid) and nickel (solid casing) are sum
 
 \begin{table}[htbp]
 % \scriptsize
-% \footnotesize
-\small
+\footnotesize
+\setlength{\tabcolsep}{3pt}
 \centering
 \caption{Material properties used in the simulations. The air thermal conductivity follows from $\kappa = \mu c_p/Pr$ with $Pr = 0.7$, as specified in the solver input. In the steady radial conduction case, the solid density and specific heat were reduced to $\rho = 0.089$~kg/m$^3$ and $c_p = 0.00444$~J/(kg·K) to accelerate convergence to steady state; the steady solution depends only on $\kappa$.}
 \label{tab:properties}
@@ -229,7 +229,7 @@ Verification studies are designed to isolate sources of numerical error and asse
 \begin{table*}[htbp]
     \centering
     \caption{Spatial and temporal resolution parameters used in the verification studies.}
-    \begin{tabular}{p{2.75cm}p{4.25cm}p{5.75cm}p{2.0cm}}
+    \begin{tabular}{P{2.75cm}P{4.25cm}P{5.45cm}P{2.3cm}}
         \toprule
         Study & $h$ [mm] & $\Delta t$ [s] & Refinement \\
         \midrule

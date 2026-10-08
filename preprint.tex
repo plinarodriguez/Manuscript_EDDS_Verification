@@ -1,0 +1,104 @@
+%% arXiv preprint version of the manuscript.
+%% Generic two-column article layout with Palatino; no journal styling.
+%% Lives on the unmerged `arxiv-preprint` branch; the journal source is
+%% manuscript_edds_Verification.tex (asmejour class) on main.
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{newpxtext,newpxmath}          % Palatino text and matching math
+\usepackage[letterpaper,margin=0.75in,columnsep=0.3in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs,array}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{float}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{subcaption}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[hyphens]{url}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage{microtype}
+
+\hypersetup{%
+  pdfauthor={Paulina Rodriguez, Lorena A. Barba, Brian Carnes, Matthew Myers},
+  pdftitle={Verification of a Conjugate Heat Transfer Model in OpenFOAM for a Simplified Medical Device Geometry},
+  pdfkeywords={Computational Model Verification, Code Verification, Solution Verification, Conjugate Heat Transfer, OpenFOAM, Numerical Convergence, Discretization Error, Medical Device Model, CFD, Heat Transfer},
+  pdfsubject={Code and solution verification of a conjugate heat transfer model of a simplified medical device geometry, following ASME V\&V 40},
+}
+
+\setlength{\emergencystretch}{1.5em}
+
+% Float placement: allow large floats at the top of pages so that
+% tables and figures do not drift onto mostly empty float pages.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\bottomfraction}{0.5}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\renewcommand{\dblfloatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{dbltopnumber}{2}
+\setcounter{totalnumber}{5}
+
+\title{\bfseries Verification of a Conjugate Heat Transfer Model in OpenFOAM
+  for a Simplified Medical Device Geometry}
+\author{%
+  Paulina Rodriguez\textsuperscript{1}\qquad
+  Lorena A. Barba\textsuperscript{1}\qquad
+  Brian Carnes\textsuperscript{2}\qquad
+  Matthew Myers\textsuperscript{3}\\[1.5ex]
+  {\small\normalfont
+  \textsuperscript{1}Department of Mechanical and Aerospace Engineering, The George Washington University}\\
+  {\small\normalfont \textsuperscript{2}Sandia National Laboratories}\\
+  {\small\normalfont \textsuperscript{3}Puente Translational Sciences}}
+\date{Preprint, \today}
+
+\begin{document}
+
+\makeatletter
+\twocolumn[{%
+  \@maketitle
+  \begin{center}
+    \begin{minipage}{0.85\textwidth}
+      \small
+      \centerline{\bfseries Abstract}\smallskip
+      \input{sections/abstract}
+
+      \medskip
+      \noindent\textbf{Keywords:} Computational Model Verification, Code Verification,
+      Solution Verification, Conjugate Heat Transfer, OpenFOAM, Numerical Convergence,
+      Discretization Error, Medical Device Model, CFD, Heat Transfer
+    \end{minipage}
+  \end{center}
+  \vspace{2ex}
+}]
+\thispagestyle{plain}
+\makeatother
+
+\section{Introduction}
+\input{sections/introduction}
+
+\section{Methods}
+\input{sections/methods}
+
+\section{Results}
+\input{sections/results}
+
+\section{Discussion}
+\input{sections/discussion}
+
+\section{Conclusion}
+\input{sections/conclusion}
+
+\section*{Acknowledgments}
+\input{sections/acknowledgements}
+
+\section*{Funding}
+\input{sections/funding}
+
+\bibliographystyle{preprint-unsrtnat}
+\bibliography{references}
+
+\end{document}

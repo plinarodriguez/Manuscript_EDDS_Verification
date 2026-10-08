@@ -24,3 +24,6 @@ diff.pdf
 
 # OS files
 .DS_Store
+
+# arXiv bundle (arxiv-preprint branch)
+edds_verification_arxiv.zip

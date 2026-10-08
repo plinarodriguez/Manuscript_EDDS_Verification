@@ -7,28 +7,28 @@ Each of the three code-verification cases is compared with its analytical soluti
 The axial velocity at $QoI_{\text{hydro}}$ was compared pointwise with the analytical solution (Eq.~\ref{eq:poiseuille}).
 Figure~\ref{fig:scatterVelocity} shows three of the four meshes: coarse (0.43~mm), medium (0.22~mm), and fine (0.11~mm); the finest mesh (0.088~mm) is not shown but is included in the error analysis of Figure~\ref{fig:errorVsLength}. The numerical solution progressively aligns with the analytical parabolic profile as mesh resolution improves. The coarse mesh overpredicts velocity near the centerline due to insufficient spatial resolution, while the fine mesh achieves the best agreement of the three.
 
-\begin{figure}[htbp!]
+\begin{figure*}[htbp!]
   \centering
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
     \includegraphics[width=\textwidth]{figures/code_verification/poiseuille/U_scatter_radial_z5mm_M0.png}
     \caption{Coarse Mesh}
     \label{fig:sub1}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
     \includegraphics[width=\textwidth]{figures/code_verification/poiseuille/U_scatter_radial_z5mm_M1.png}
     \caption{Medium Mesh}
     \label{fig:sub2}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
     \includegraphics[width=\textwidth]{figures/code_verification/poiseuille/U_scatter_radial_z5mm_M2.png}
     \caption{Fine Mesh}
     \label{fig:sub3}
   \end{subfigure}
   \caption{Simulated hydrodynamic model axial velocity by radial position at $QoI_{\text{hydro}}$, overlaid with the analytical Hagen-Poiseuille solution (black points). Three of the four meshes are shown.}
   \label{fig:scatterVelocity}
-\end{figure}
+\end{figure*}
 
 The normalized $L_2$ error was evaluated for each mesh and plotted against representative cell length (Figure~\ref{fig:errorVsLength}). The error decreases consistently with mesh refinement, yielding an observed order of convergence of $p = 1.95$. This behavior is consistent with the expected second-order accuracy of the spatial discretization scheme. These results confirm that the numerical solver accurately represents the analytical velocity field.
 
@@ -44,28 +44,28 @@ Figure~\ref{fig:scatterTemperature} compares the computed radial temperature pro
 % #Extra info: 
 % Three refined meshes were used a coarse mesh with 18,000 nodes and a representative cell length of 0.14mm, a medium mesh with 144,000 nodes and a representative length of 0.071 mm, and a fine mesh with 1,152,000 nodes and a representative length of 0.035 mm. Axial Temperature are sampled across $z$ = 67.5 mm, a location far enough from the inlet and outlet. 
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
   \centering
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
     \includegraphics[width=\textwidth]{figures/heatsource/T_scatter_radial_z67.5mm_M0.png}
     \caption{Coarse mesh. }
     \label{fig:sub1T}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
     \includegraphics[width=\textwidth]{figures/heatsource/T_scatter_radial_z67.5mm_M1.png}
     \caption{Medium mesh.}
     \label{fig:sub2T}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
     \includegraphics[width=\textwidth]{figures/heatsource/T_scatter_radial_z67.5mm_M2.png}
     \caption{Fine mesh.}
     \label{fig:sub3T}
   \end{subfigure}
   \caption{Radial conduction model simulated temperature by radial position at $QoI_{\text{cond}}$, overlaid with the analytical solution (black points).}
   \label{fig:scatterTemperature}
-\end{figure}
+\end{figure*}
 
 The numerical temperature field converges toward the analytical solution as mesh resolution increases. The coarse mesh exhibits noticeable deviation from the analytical profile, while refinement reduces this discrepancy and the fine mesh achieves near pointwise agreement across the radius. The normalized $L_2$ error was evaluated for each mesh and plotted against representative cell length (Figure~\ref{fig:l2normTempInterface}). The error decreases consistently with mesh refinement, producing an observed order of convergence of $p = 2.08$, which is consistent with the expected second-order spatial accuracy of the discretization scheme. The error magnitude decreases from $\mathcal{O}(10^{-4})$ to $\mathcal{O}(10^{-6})$, indicating strong agreement with the analytical solution. These results confirm that the numerical implementation of the solid energy equation is correct and exhibits the expected convergence behavior under mesh refinement.
 
@@ -93,28 +93,28 @@ Solution verification quantifies spatial, temporal, and iterative (solver-tolera
 \subsubsection{Steady-State Coupled Pipe}
 Figure~\ref{fig:scatterTemp} shows the radial temperature distribution within the thermally developing region, located 14 mm downstream of the start of heating. The highest temperatures occur near the wall where heat is introduced, while lower temperatures are near the centerline due to the developing thermal boundary layer. As mesh resolution increases, the temperature field becomes smoother and more consistent.
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
   \centering
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
     \includegraphics[width=\textwidth]{figures/code_verification/graetz/T_scatter_radial_z30mm_M0.png}
     \caption{Coarse mesh.}
     \label{fig:sub1Pipe}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
     \includegraphics[width=\textwidth]{figures/code_verification/graetz/T_scatter_radial_z30mm_M1.png}
     \caption{Medium mesh.}
     \label{fig:sub2Pipe}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
     \includegraphics[width=\textwidth]{figures/code_verification/graetz/T_scatter_radial_z30mm_M2.png}
     \caption{Fine mesh.}
     \label{fig:sub3Pipe}
   \end{subfigure}
   \caption{Radial temperature distribution within the thermally developing region.}
   \label{fig:scatterTemp}
-\end{figure}
+\end{figure*}
 
 Figure~\ref{fig:tempErrs_mesh} shows the relative error in $QoI_{\text{pipe}}$, the bulk fluid temperature at 30~mm, with respect to the \texttt{StREEQ} extrapolation, as a function of representative cell size. The error decreases consistently with refinement, resulting in an observed order of convergence of $p = 1.90$, which is consistent with near second-order spatial accuracy. These results demonstrate that the coupled solver exhibits consistent convergence behavior and accurately captures the thermally developing flow.
 
