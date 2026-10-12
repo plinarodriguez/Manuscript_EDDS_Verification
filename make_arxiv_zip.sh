@@ -16,7 +16,7 @@ mkdir -p "$src"
 grep -E '^INPUT (\./)?(figures|sections)/' preprint.fls \
   | sed -E 's/^INPUT (\.\/)?//' | sort -u \
   | xargs -I{} cp --parents {} "$src/"
-cp preprint.tex preprint.bbl "$src/"
+cp preprint.tex preprint.bbl preprint-unsrtnat.bst "$src/"   # .bst only so arXiv's scan finds it; the .bbl is what compiles
 
 arxiv_latex_cleaner "$src" >/dev/null   # writes "$src"_arXiv
 rm -f edds_verification_arxiv.zip
