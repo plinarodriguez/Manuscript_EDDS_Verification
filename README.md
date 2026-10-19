@@ -1,6 +1,6 @@
 # Verification of a Conjugate Heat Transfer Model in OpenFOAM for a Simplified Medical Device Geometry
 
-LaTeX source of the manuscript by Paulina Rodriguez, Lorena A. Barba, Brian Carnes, and Matthew Myers, submitted as a Research Paper to the *ASME Journal of Verification, Validation and Uncertainty Quantification*. The tag `v1.0.0` marks the version originally submitted; `main` holds the revision prepared in response to the reviewers.
+LaTeX source of the manuscript by Paulina Rodriguez, Lorena A. Barba, Brian Carnes, and Matthew Myers, accepted by the *ASME Journal of Verification, Validation and Uncertainty Quantification*. The tag `v1.0.0` marks the version originally submitted; `main` holds the revision prepared in response to the reviewers.
 
 The simulations, mesh scripts, and analysis workflows reported in the paper are in a separate repository: [plinarodriguez/edds_verification_repo](https://github.com/plinarodriguez/edds_verification_repo). The risk-informed credibility plan is in [plinarodriguez/edds-credibility-plan](https://github.com/plinarodriguez/edds-credibility-plan).
 
