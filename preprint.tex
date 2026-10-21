@@ -2,6 +2,8 @@
 %% Generic two-column article layout with Palatino; no journal styling.
 %% Lives on the unmerged `arxiv-preprint` branch; the journal source is
 %% manuscript_edds_Verification.tex (asmejour class) on main.
+% PDF/A-3u output (archival format; DOE PAGES prefers PDF/A). Needs LaTeX 2022 or later.
+\DocumentMetadata{pdfstandard=a-3u, pdfversion=1.7, lang=en-US}
 \documentclass[10pt,twocolumn]{article}
 
 \usepackage[T1]{fontenc}
@@ -54,7 +56,11 @@
   \textsuperscript{1}Department of Mechanical and Aerospace Engineering, The George Washington University}\\
   {\small\normalfont \textsuperscript{2}Sandia National Laboratories}\\
   {\small\normalfont \textsuperscript{3}Puente Translational Sciences}}
-\date{Preprint, \today}
+% Version line under the authors. accepted.tex defines \versionnote (and
+% optionally \articledoi) before inputting this file; otherwise it is a preprint.
+\providecommand{\versionnote}{Preprint, \today}
+\providecommand{\articledoi}{}
+\date{\versionnote\if\relax\detokenize\expandafter{\articledoi}\relax\else\\ \small\url{https://doi.org/\articledoi}\fi}
 
 \begin{document}
 
